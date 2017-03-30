@@ -1,0 +1,5 @@
+Dla większości testów, wyniki były porównywalne.
+
+Funkcje systemowe zyskiwały przewagę dla większych danych, funkcje biblioteczne działały szybciej dla mniejszych danych.
+
+Szybkość sortowania i funkcji "shuffle" praktycznie nie zależy od długości rekordu.

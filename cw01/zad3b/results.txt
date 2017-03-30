@@ -1,0 +1,357 @@
+Static_opt0
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 25.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 15.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 22.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 48.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1127.000000 	 0.000000 	 0.000000 
+Static_opt1
+Tree creation times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1581.000000 	 0.000000 	 0.000000 
+Static_opt2
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 7.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 32.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 46.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 20.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 32.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 66.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1580.000000 	 0.000000 	 0.000000 
+Static_opt3
+Tree creation times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 27.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 35.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 15.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 172.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1241.000000 	 0.000000 	 0.000000 
+Static_opts
+Tree creation times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 6.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 359.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 37.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 15.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 24.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 48.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1460.000000 	 0.000000 	 0.000000 
+Static_optfast
+Tree creation times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 6.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 26.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1791.000000 	 0.000000 	 0.000000 
+Static_optg
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 6.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 22.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 13.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 20.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 42.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1894.000000 	 0.000000 	 0.000000 
+Shared_opt0
+Tree creation times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 27.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1522.000000 	 0.000000 	 0.000000 
+Shared_opt1
+Tree creation times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 21.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 21.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 28.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1425.000000 	 0.000000 	 0.000000 
+Shared_opt2
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 6.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 27.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 14.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1853.000000 	 1.000000 	 0.000000 
+Shared_opt3
+Tree creation times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 27.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 28.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 27.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1424.000000 	 0.000000 	 0.000000 
+Shared_opts
+Tree creation times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 10.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 41.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 2834.000000 	 0.000000 	 0.000000 
+Shared_optfast
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 26.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 13.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1496.000000 	 1.000000 	 0.000000 
+Shared_optg
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 69.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 68.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 21.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 34.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 48.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 2412.000000 	 1.000000 	 0.000000 
+Dynamic_opt0
+Tree creation times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 17.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 150.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 10.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1207.000000 	 0.000000 	 0.000000 
+Dynamic_opt1
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 356.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 10.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 26.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 33.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 2241.000000 	 0.000000 	 0.000000 
+Dynamic_opt2
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 7.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 25.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 26.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 11.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1353.000000 	 0.000000 	 0.000000 
+Dynamic_opt3
+Tree creation times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 30.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 29.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 14.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 41.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 2104.000000 	 0.000000 	 0.000000 
+Dynamic_opts
+Tree creation times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 6.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 35.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 32.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 13.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1448.000000 	 0.000000 	 0.000000 
+Dynamic_optfast
+Tree creation times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 7.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 25.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 26.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 3.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 8.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 12.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 31.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1871.000000 	 1.000000 	 0.000000 
+Dynamic_optg
+Tree creation times: real, user, system: 4.000000 	 0.000000 	 0.000000 
+List creation times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List insert optimistic times: real, user, system: 2.000000 	 0.000000 	 0.000000 
+List insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree insert optimistic times: real, user, system: 7.000000 	 0.000000 	 0.000000 
+Tree insert pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List search optimistic times: real, user, system: 175.000000 	 0.000000 	 0.000000 
+List search pessimistic times: real, user, system: 35.000000 	 0.000000 	 0.000000 
+Tree search optimistic times: real, user, system: 5.000000 	 0.000000 	 0.000000 
+Tree search pessimistic times: real, user, system: 0.000000 	 0.000000 	 0.000000 
+List delete optimistic times: real, user, system: 9.000000 	 0.000000 	 0.000000 
+List delete pessimistic times: real, user, system: 14.000000 	 0.000000 	 0.000000 
+Tree delete optimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+Tree delete pessimistic times: real, user, system: 1.000000 	 0.000000 	 0.000000 
+List sort times: real, user, system: 37.000000 	 0.000000 	 0.000000 
+Tree sort times: real, user, system: 1548.000000 	 0.000000 	 0.000000 

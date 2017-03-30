@@ -1,0 +1,7 @@
+Usunąłem wywołanie wczytywania danych z pliku dane1.txt do programu, co powoduje, że program próbuje wypełnić książkę adresową danymi, których nie ma, co doprowadza do SEGMENTATION FAULTa.
+
+Aby debugować program przy użyciu gdb używamy komendy "gdb ./main"
+Uruchamiamy go w gdb przy pomocy "run"
+Następnie generujemy core dump file przy użyciu komendy "generate-core-file"
+Opuszczamy gdb
+Aby przeanalizować później core dump wywołujemy "gdb ./main [nazwa_pliku_coredump]"
