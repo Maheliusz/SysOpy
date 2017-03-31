@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     char *word = calloc(maxlength, sizeof(char));
     while ((line = fgets(line, maxlength, file)) != NULL) {
         word = strtok(line, " \n");
-        if (word == NULL) continue;
+        if (word == NULL || word[0]==' ') continue;
         if (word[0] == '#') {
             char *name = calloc(strlen(word) - 1, sizeof(char));
             memcpy(name, word + 1, strlen(word) - 1);
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
             int i = 1;
             do {
 				i++;
-                arr = realloc(arr, i);
+                arr = realloc(arr, i*sizeof(char*));
                 tmp = strtok(NULL, " \n");
                 if (tmp == NULL) arr[i - 1] = NULL;
                 else if (getenv(tmp) != NULL) {
@@ -57,9 +57,10 @@ int main(int argc, char *argv[]) {
                 if (status != 0) printf("Error ocured during executing a command\n");
             }
             free(tmp);
-            for (int j = 0; j < i - 1; j++) {
-                if (arr[j] != NULL) free(arr[j]);
-            }
+            //for (int j = 0; j < i - 1; j++) {
+            //    if (arr[j] != NULL) free(arr[j]);
+            //}
+            
             free(arr);
         }
 
