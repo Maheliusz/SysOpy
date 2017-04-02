@@ -4,14 +4,17 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) return 1;
+    if (argc < 4) return 1;
     FILE *file = fopen(argv[1], "r");
     if (file == NULL) {
         printf("Can't open file\n");
         exit(1);
     }
+	int maxseconds = atoi(argv[2]);
+	int maxmegabytes = atoi (argv[3]);
     int status;
     int maxlength = 128;
     char *line = calloc(maxlength, sizeof(char));
@@ -50,6 +53,14 @@ int main(int argc, char *argv[]) {
             int pid = fork();
             if (pid < 0) printf("Process cannot be created\n");
             else if (pid == 0) {
+            	struct rlimit time_limit;
+            	struct rlimit mem_limit;
+            	time_limit.rlim_max=(rlim_t)maxseconds;
+            	time_limit.rlim_cur=(rlim_t)1;
+            	mem_limit.rlim_max=(rlim_t)(1024*1024*maxmegabytes);
+            	mem_limit.rlim_cur=(rlim_t)(1024*512*maxmegabytes);
+            	setrlimit(RLIMIT_CPU, &time_limit);
+            	setrlimit(RLIMIT_AS, &mem_limit);
                 execvp(arr[0], arr);
                 exit(0);
             } else {
