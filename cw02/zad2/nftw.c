@@ -17,6 +17,7 @@ void printtime(struct tm *val){
 
 int nftwfunc(const char *path, const struct stat *buffer, int info, struct FTW *str){
     if(buffer->st_size>maxsize) return 0;
+	char *abs_path = calloc(1000, sizeof(char));
     //printf("Object path: %s \n", path);
     //printf("Object size: %d \n", (int)buffer->st_size);
     char *permissions = calloc(10, sizeof(char));
@@ -39,9 +40,11 @@ int nftwfunc(const char *path, const struct stat *buffer, int info, struct FTW *
     if(buffer->st_mode & S_IXOTH) permissions[8]='x';
     else permissions[8]='-';
     permissions[9]='\0';
-    printf("%s %d %s", path, (int)(buffer->st_size), permissions);
+	realpath(path, abs_path);
+    printf("%s %d %s", abs_path, (int)(buffer->st_size), permissions);
     printtime(localtime(&buffer->st_mtime));
     free(permissions);
+	free(abs_path);
     return 0;
 }
 
