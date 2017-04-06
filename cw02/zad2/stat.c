@@ -39,7 +39,8 @@ void printinfo(const char *path, const struct stat *buffer){
     if(buffer->st_mode & S_IXOTH) permissions[8]='x';
     else permissions[8]='-';
     permissions[9]='\0';
-    printf("%s %d %s", realpath(path, tmp), (int)(buffer->st_size), permissions);
+    realpath(path, tmp);
+    printf("%s %d %s", tmp, (int)(buffer->st_size), permissions);
     printtime(localtime(&buffer->st_mtime));
     free(tmp);
     free(permissions);
@@ -76,9 +77,9 @@ int main(int argc, char *argv[]){
 	perror("Not enough arguments!");
 	exit(1);
     }
-    char* cat = calloc(sizeof(argv[1]), sizeof(char));
+    char* cat = calloc(1000, sizeof(char));
     strcpy(cat, argv[1]);
-    printf("%s\n", cat);
+    printf("-%s-\n", cat);
     maxsize = atoi(argv[2]);
     search(cat);
     return 0;
