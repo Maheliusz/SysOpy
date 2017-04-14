@@ -8,7 +8,7 @@ int fwd=1;
 
 void sighandler(int signo){
 	if(signo==SIGTSTP){
-		if(fwd==1) fwd=0;
+		if(fwd==1) fwd=-1;
 		else fwd = 1;
 	}
 	else if(signo==SIGINT){
@@ -28,10 +28,7 @@ int main(int argc, char* argv[]){
 		signal(SIGTSTP, sighandler);
 		sigaction(SIGINT, &action, NULL);
 		printf("%c", alphabet[rnr]);
-		if(fwd==1)
-			rnr++;
-		else
-			rnr--;
+		rnr+=fwd;
 		if(rnr==strlen(alphabet)) rnr=0;
 		else if(rnr==-1) rnr=strlen(alphabet)-1;
 		usleep(100);
