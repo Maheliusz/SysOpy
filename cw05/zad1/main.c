@@ -5,7 +5,9 @@
 #include<string.h>
 
 int main(int argc, char *argv[]){
-	char container[100][100][100];
+	char ***container;
+	container=calloc(100, sizeof(char**));
+	for(int i=0; i<100; i++) container[i]=calloc(100, sizeof(char*));
 	char *input = calloc(1000, sizeof(char));
 	char *buf = calloc(100, sizeof(char));
 	int run1 = 0;
@@ -22,7 +24,7 @@ int main(int argc, char *argv[]){
 			run2 = 0;
 		}
 		else{
-			strcmp(container[run1][run2], buf);
+			strcpy(container[run1][run2], buf);
 		}
 		run2++;
 	}while((buf = strtok(NULL, " \n"))!=NULL);

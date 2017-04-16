@@ -6,13 +6,13 @@
 
 int pid;
 int ppid;
+char *msg;
 
 void parentrthandler(int signo){
 	if(signo==SIGRTMIN){
 		printf("Parent: otrzymano SIGRTMIN\n");
 	}else if(signo==SIGRTMAX){
 		printf("Parent: otrzymano SIGRTMAX, koncze dzialanie\n");
-		exit(0);
 	} else if(signo==SIGINT){
 		kill(pid, SIGINT);
 	}
@@ -38,6 +38,7 @@ void parentqhandler(int signo){
 			kill(pid, SIGINT);
 			break;
 	}
+	fflush(NULL);
 }
 
 void childqhandler(int signo){
@@ -78,20 +79,23 @@ void killfun(int L){
 	ppid = getpid();
 	pid = fork();
 	if(pid==0){
+		signal(SIGUSR1, childkillhandler);
+		signal(SIGINT, SIG_DFL);
 		for(int i=0; i<L; i++){
 			pause();
-			signal(SIGUSR1, childkillhandler);
 		}
+		printf("Child: wysylam SIGUSR2\n");
 		kill(ppid, SIGUSR2);
 		exit(0);
 	}else{
+		signal(SIGINT, parentkillhandler);
+		signal(SIGUSR1, parentkillhandler);
+		signal(SIGUSR2, parentkillhandler);
 		for(int i=0; i<L; i++){
-			signal(SIGINT, parentkillhandler);
+			sleep(1);
 			kill(pid, SIGUSR1);
-			printf("Parent: wyslano SIGUSR1 nr %d\n", i);
+			printf("Parent: wyslano SIGUSR1 nr %d\n", i+1);
 			pause();
-			signal(SIGUSR1, parentkillhandler);
-			signal(SIGUSR2, parentkillhandler);
 		}
 	}
 }
@@ -101,20 +105,23 @@ void sigq(int L){
 	ppid = getpid();
 	pid = fork();
 	if(pid==0){
+		signal(SIGUSR1, childqhandler);
+		signal(SIGINT, SIG_DFL);
 		for(int i=0; i<L; i++){
 			pause();
-			signal(SIGUSR1, childqhandler);
 		}
+		printf("Child: wysylam SIGUSR2\n");
 		sigqueue(ppid, SIGUSR2, value);
 		exit(0);
 	}else{
+		signal(SIGINT, parentqhandler);
+		signal(SIGUSR1, parentqhandler);
+		signal(SIGUSR2, parentqhandler);
 		for(int i=0; i<L; i++){
-			signal(SIGINT, parentqhandler);
+			sleep(1);
 			sigqueue(pid, SIGUSR1, value);
-			printf("Parent: wyslano SIGUSR1 nr %d\n", i);
+			printf("Parent: wyslano SIGUSR1 nr %d\n", i+1);
 			pause();
-			signal(SIGUSR1, parentqhandler);
-			signal(SIGUSR2, parentqhandler);
 		}
 	}
 }
@@ -123,20 +130,23 @@ void rtsig(int L){
 	ppid = getpid();
 	pid = fork();
 	if(pid==0){
+		signal(SIGRTMIN, childrthandler);
+		signal(SIGINT, SIG_DFL);
 		for(int i=0; i<L; i++){
 			pause();
-			signal(SIGRTMIN, childrthandler);
 		}
+		printf("Child: wysylam SIGRTMAX\n");
 		kill(ppid, SIGRTMAX);
 		exit(0);
 	}else{
+		signal(SIGRTMIN, parentrthandler);
+		signal(SIGRTMAX, parentrthandler);
+		signal(SIGINT, parentrthandler);
 		for(int i=0; i<L; i++){
-			signal(SIGINT, parentrthandler);
+			sleep(1);
 			kill(pid, SIGRTMIN);
-			printf("Parent: wyslano SIGRTMIN nr %d\n", i);
+			printf("Parent: wyslano SIGRTMIN nr %d\n", i+1);
 			pause();
-			signal(SIGRTMIN, parentrthandler);
-			signal(SIGRTMAX, parentrthandler);
 		}
 	}
 }
@@ -148,6 +158,9 @@ int main(int argc, char* argv[]){
 		printf("Type moze przyjmowac wartosci wylacznie 1, 2, 3\n");
 		return 1;
 	}
+	sigset_t *set = calloc(1, sizeof(sigset_t*));;
+	sigemptyset(set);
+	sigprocmask(SIG_SETMASK, set, NULL);
 	switch(type){
 		case 1:
 			killfun(L);
@@ -157,8 +170,7 @@ int main(int argc, char* argv[]){
 			break;
 		case 3:
 			rtsig(L);
-			break;
-			
+			break;	
 		default:
 			break;			
 	}
