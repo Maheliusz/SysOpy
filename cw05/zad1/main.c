@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 	char *buf = calloc(100, sizeof(char));
 	int run1 = 0;
 	int run2 = 0;
-	
+
 	fgets(input, 1000, stdin);
 	if((buf = strtok(input, " \n\0"))==NULL){ 
 		printf("BLAD");
