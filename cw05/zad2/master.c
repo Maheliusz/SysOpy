@@ -18,14 +18,14 @@ int main(int argc, char* argv[]){
 	char *buf = calloc(128, sizeof(char));
 	int i, j;
 	while(fread(line, sizeof(char), 128, fifo)!=0){
-		buf = strtok(line, " \n");
+		buf = strtok(line, " \n\0");
 		i = atoi(buf);
 		free(buf);
-		buf = strtok(NULL, " \n");
+		buf = strtok(NULL, " \n\0");
 		j = atoi(buf);
 		free(buf);
-		buf = strtok(NULL, " \n");
-		T[i][j]+= atoi(strtok(NULL, " \n"));
+		buf = strtok(NULL, " \n\0");
+		T[i][j]+= atoi(buf);
 		free(buf);
 	}
 	fclose(fifo);
@@ -36,6 +36,5 @@ int main(int argc, char* argv[]){
 	fprintf(plot, "plot 'data' with image");
 	fflush(plot);
 	getc(stdin);
-	
 	return 0;
 }

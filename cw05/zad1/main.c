@@ -38,39 +38,26 @@ int main(int argc, char *argv[]){
 	int pp[2];
 	pid_t pid;
 	int length = run1+1;
-	//printf("Length = %d\n", length);
-	int onlyOne=1;
-	for(int i=0; i<length-1; i++){
+	for(int i=0; i<length; i++){
 		pipe(pp);
 		pid = fork();
 		if(pid==0){
 			if(i!=0){
 				dup2(pp[0], STDIN_FILENO);
-				close(pp[0]);
+				//close(pp[0]);
 			}
-			dup2(pp[1], STDOUT_FILENO);
-			close(pp[1]);
+			if(i!=length-1){
+				dup2(pp[1], STDOUT_FILENO);
+				//close(pp[1]);
+			}
 			execvp(container[i][0], container[i]);
+			close(pp[0]);
+			close(pp[1]);
+			printf("Wykonano komende nr %d\n", i);
 		}
 		else{
-			int status;
-			wait(&status);
+			wait(NULL);
 		}
-		onlyOne=0;
-	}
-	
-	pid=fork();
-	if(pid==0){
-		if(onlyOne==0){
-			dup2(pp[0], STDIN_FILENO);
-			close(pp[0]);
-		}
-		execvp(container[length-1][0], container[length-1]);
-	}
-	else{
-		int status;
-		wait(&status);
-	}
-	
+	}	
 	return 0;
 }
