@@ -37,7 +37,8 @@ int main(int argc, char *argv[]){
 	free(buf);
 	int pp[2];
 	pid_t pid;
-	int length = sizeof(container)/sizeof(char**);
+	int length = run1+1;
+	//printf("Length = %d\n", length);
 	int onlyOne=1;
 	for(int i=0; i<length-1; i++){
 		pipe(pp);
