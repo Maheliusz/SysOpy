@@ -7,8 +7,8 @@
 
 int main(int argc, char *argv[]){
 	char ***container;
-	container=calloc(1, sizeof(char***));
-	container[0]=calloc(1, sizeof(char**));
+	container=calloc(1, sizeof(char**));
+	container[0]=calloc(1, sizeof(char*));
 	char *input = calloc(1000, sizeof(char));
 	char *buf = calloc(100, sizeof(char));
 	int run1 = 0;
@@ -22,14 +22,13 @@ int main(int argc, char *argv[]){
 	do{
 		if(strcmp(buf, "|") == 0){
 			run1++;
-			container = realloc(container, (run1+1)*sizeof(char***));
+			container = realloc(container, (run1+1)*sizeof(char**));
 			container[run1]=calloc(1, sizeof(char**));
 			run2 = 0;
 		}
 		else{
-			container[run1]= realloc(container, (run2+1)*sizeof(char**));
-			container[run1][run2]=calloc(1, sizeof(char*));
-			//calloc(strlen(buf)+1, sizeof(char));
+			container[run1]= realloc(container[run1], (run2+1)*sizeof(char*));
+			container[run1][run2]=calloc(strlen(buf)+1, sizeof(char));
 			strcpy(container[run1][run2], buf);
 			run2++;
 		}
@@ -38,7 +37,7 @@ int main(int argc, char *argv[]){
 	free(buf);
 	int pp[2];
 	pid_t pid;
-	int length = sizeof(container)/sizeof(container[0]);
+	int length = sizeof(container)/sizeof(char**);
 	int onlyOne=1;
 	for(int i=0; i<length-1; i++){
 		pipe(pp);
