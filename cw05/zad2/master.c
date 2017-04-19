@@ -12,7 +12,7 @@ void filltab(int **T, int R, double i, double j, int iters){
 		if((-2+a*3/R)<=i&&(-2+(a+1)*3/R)>=i) re_res = a;
 		if((-1+a*3/R)<=j&&(-1+(a+1)*3/R)>=j) im_res= a;
 	}
-	T[re_res][im_res]=iters;
+	T[re_res][im_res]=T[re_res][im_res]+iters;
 }
 
 int main(int argc, char* argv[]){
