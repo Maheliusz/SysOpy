@@ -9,9 +9,9 @@
 
 int K;
 
-int iters(int re, int im){
-	int curr_re = 0;
-	int curr_im = 0;
+int iters(double re, double im){
+	double curr_re = 0;
+	double curr_im = 0;
 	int i=0;
 	double module;
 	while(1){
@@ -25,31 +25,32 @@ int iters(int re, int im){
 	return i;
 }
 
-int rand_re(){
-	return (rand()%4)-2;
+double rand_re(){
+	return ((double)rand()/(double)(RAND_MAX/3)-2);
 }
 
-int rand_im(){
-	return (rand()%3)-2;
+double rand_im(){
+	return ((double)rand()/(double)(RAND_MAX/2)-1);
 }
 
 int main(int argc, char* argv[]){
 	if(argc<4) return 1;
 	char *path = calloc(strlen(argv[1]), sizeof(char));
 	strcpy(path, argv[1]);
+	mkfifo(path, S_IRWXU);
 	int N;
 	N = atoi(argv[2]);
 	K = atoi(argv[3]);
 	FILE *file = fopen(path, "w");
 	srand(time(NULL));
-	int re;
-	int im;
+	double re;
+	double im;
 	int res;
 	for(int i=0; i<N; i++){
 		re = rand_re();
 		im = rand_im();
 		res = iters(re, im);
-		fprintf(file, "%d %d %d\n", re, im, res);
+		fprintf(file, "%lf %lf %d\n", re, im, res);
 	}
 	fclose(file);	
 	return 0;
