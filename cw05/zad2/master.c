@@ -5,38 +5,41 @@
 #include<stdlib.h>
 #include<string.h>
 
-void filltab(int **T, int R, double i, double j, int iters){
-	int re_res = 0;
-	int im_res = 0;
-	for(int a = 0; a<R; a++){
+int **T;
+int R;
+
+void filltab(double i, double j, int iters){
+	int re_res=0;
+	int im_res=0;
+	for(re_res=1; 3.0*re_res/((double)R)-2<i; re_res++);
+	for(im_res=1; 2.0*im_res/((double)R)-1<j; im_res++);
+	/*for(int a = 0; a<R; a++){
 		if((-2+a*3/R)<=i&&(-2+(a+1)*3/R)>=i) re_res = a;
-		if((-1+a*3/R)<=j&&(-1+(a+1)*3/R)>=j) im_res= a;
-	}
-	T[re_res][im_res]=T[re_res][im_res]+iters;
+		if((-1+a*2/R)<=j&&(-1+(a+1)*3/R)>=j) im_res= a;
+	}*/
+	T[re_res-1][im_res-1]=iters;
 }
 
 int main(int argc, char* argv[]){
 	if(argc<3) return 1;
-	int R = atoi(argv[2]);
-	int **T = calloc(R, sizeof(int*));
+	R = atoi(argv[2]);
+	T = calloc(R, sizeof(int*));
 	for(int i=0; i<R; i++) T[i] = calloc(R, sizeof(int));
+	for(int i=0; i<R; i++){
+		for(int j=0; j<R; j++) T[i][j]=0;
+	}
 	char *path = calloc(strlen(argv[1]), sizeof(char));
 	strcpy(path, argv[1]);
 	FILE *fifo = fopen(path, "r");
 	if(fifo==NULL) exit(1);
 	//printf("Otwarlem plik\n");
-	char *line = calloc(128, sizeof(char));
-	char *buf = calloc(128, sizeof(char));
 	double i, j;
 	int iters;
 	//int tmp=0;
-	while(fgets(line, 128, fifo)!=0){
-		strcpy(buf, line);
-		sscanf(strtok(buf, " \n"), "%lf", &i);
-		sscanf(strtok(NULL, " \n"), "%lf", &j);
-		iters = atoi(strtok(NULL, " \n"));
-		filltab(T, R, i, j, iters);
+	while(fscanf(fifo, "%lf %lf %d", &i, &j, &iters)!=EOF){
 		//printf("Przeczytalem linijke numer %d\n", tmp++);
+		//printf("%lf %lf %d\n", i, j, iters);
+		filltab(i, j, iters);
 	}
 	fclose(fifo);
 	//printf("Tablica zapelniona\n");
@@ -48,16 +51,15 @@ int main(int argc, char* argv[]){
 		}
 	}
 	//printf("Utworzono data\n");
-	
+	fclose(data);
 	FILE *plot = popen("gnuplot -persistent", "w");
-	printf("Uruchomilem gnuplot\n");
-	fprintf(plot, "set view map");
-	fprintf(plot, "set xrange [0:%d]", R);
-	fprintf(plot, "set yrange [0:%d]", R);
-	fprintf(plot, "plot 'data' with image");
+	//printf("Uruchomilem gnuplot\n");
+	fprintf(plot, "set view map\n");
+	fprintf(plot, "set xrange [0:%d]\n", R);
+	fprintf(plot, "set yrange [0:%d]\n", R);
+	fprintf(plot, "plot 'data' with image\n");
 	fflush(plot);
 	getc(stdin);
-	fclose(data);
 	pclose(plot);
 	return 0;
 }
