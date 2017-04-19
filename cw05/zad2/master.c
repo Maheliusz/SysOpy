@@ -30,6 +30,7 @@ int main(int argc, char* argv[]){
 	}
 	char *path = calloc(strlen(argv[1]), sizeof(char));
 	strcpy(path, argv[1]);
+	mkfifo(path, S_IRWXU);
 	FILE *fifo = fopen(path, "r");
 	if(fifo==NULL) exit(1);
 	//printf("Otwarlem plik\n");
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]){
 	}
 	fclose(fifo);
 	//printf("Tablica zapelniona\n");
-	FILE *data = fopen("data", "w+");
+	FILE *data = fopen("data", "w");
 	chmod("data", S_IRWXU | S_IRWXG | S_IRWXO);
 	for(int a=0; a<R; a++){
 		for(int b=0; b<R; b++){
