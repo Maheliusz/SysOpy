@@ -13,7 +13,7 @@
 int maxsize;
 
 void printtime(struct tm *val){
-    printf("%d.%d.%d\n", val->tm_mday, (val->tm_mon)+1, (val->tm_year)+1900);
+    printf("%d.%d.%d\n", val->tm_mday, val->tm_mon, (val->tm_year)+1900);
 }
 
 void printinfo(const char *path, const struct stat *buffer){
@@ -54,32 +54,53 @@ void search(char *path){
     }
     char *newdir = calloc(1000, sizeof(char));
     struct dirent *contents;
-    struct stat *buf;
-    while((contents = readdir(directory))!=NULL){
-	if(strcmp(contents->d_name, ".")!=0 &&  strcmp(contents->d_name, "..")!=0){
-	    strcpy(newdir, path);
-	    strcat(newdir, contents->d_name);
-	    strcat(newdir, "/");
-	    search(newdir);
-	}
-	else{
-	    strcpy(newdir, path);
-	    strcat(newdir, contents->d_name);
-	    stat(newdir, buf);
-	    printinfo(newdir, buf);
-	}
-    } 
+    struct stat buf;
+    /*while((contents = readdir(directory))!=NULL){
+		if(strcmp(contents->d_name, ".")!=0 &&  strcmp(contents->d_name, "..")!=0){
+			strcpy(newdir, path);
+			strcat(newdir, contents->d_name);
+			strcat(newdir, "/");
+			search(newdir);
+		}
+		else{
+	    	strcpy(newdir, path);
+	    	strcat(newdir, contents->d_name);
+	    	stat(newdir, buf);
+	    	printinfo(newdir, buf);
+		}
+    } */
+    while((contents=readdir(directory))!=NULL){
+    	snprintf(newdir, 1000, "%s/%s", path, contents->d_name);
+    	lstat(newdir, &buf);
+    	if(S_ISDIR(buf.st_mode)){
+    		if(strcmp(contents->d_name, ".")!=0 &&  strcmp(contents->d_name, "..")!=0){
+				int len;
+				char dirpath[1000];
+				len = snprintf(dirpath, 1000, "%s/%s", path, contents->d_name);
+				if(len<1000){
+					dirpath[len] = '\0';
+					search(dirpath);
+				}
+			}
+    	}else if(S_ISREG(buf.st_mode)){
+    		if(buf.st_size<maxsize){
+    			printinfo(newdir, &buf);
+    		}
+    	}
+    }
     closedir(directory);
 }
 
 int main(int argc, char *argv[]){
     if(argc<3){
-	perror("Not enough arguments!");
-	exit(1);
+		perror("Not enough arguments!");
+		exit(1);
     }
     char* cat = calloc(1000, sizeof(char));
     strcpy(cat, argv[1]);
     printf("-%s-\n", cat);
+	chdir(cat);
+	getcwd(cat, 1000);
     maxsize = atoi(argv[2]);
     search(cat);
     return 0;

@@ -12,11 +12,13 @@ int K;
 int iters(double re, double im){
 	double curr_re = 0;
 	double curr_im = 0;
+	double tmp;
 	int i=0;
 	while(1){
 		if(i>=K) break;
+		tmp = curr_re;
 		curr_re = curr_re*curr_re - curr_im*curr_im + re;
-		curr_im = 2*curr_im*curr_re + im;
+		curr_im = 2*curr_im*tmp + im;
 		i++;
 		if(sqrt(curr_re*curr_re+curr_im*curr_im)>=2) break;
 	}
@@ -37,7 +39,6 @@ int main(int argc, char* argv[]){
 	if(argc<4) return 1;
 	char *path = calloc(strlen(argv[1]), sizeof(char));
 	strcpy(path, argv[1]);
-	mkfifo(path, S_IRWXU);
 	int N = atoi(argv[2]);
 	K = atoi(argv[3]);
 	FILE *file = fopen(path, "w");
