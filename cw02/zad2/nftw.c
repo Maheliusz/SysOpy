@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
 	perror("Not enough arguments!");
 	exit(1);
     }
-    char* path = calloc(sizeof(argv[1]), sizeof(char));
+    char* path = calloc(strlen(argv[1])+1, sizeof(char));
     strcpy(path, argv[1]);
     maxsize = atoi(argv[2]);
     nftw(path, nftwfunc, 5, FTW_DEPTH | FTW_PHYS);
