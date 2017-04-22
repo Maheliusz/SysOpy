@@ -10,15 +10,17 @@ int main(int argc, char *argv[]){
 	container[0]=calloc(1, sizeof(char*));
 	char *input = calloc(1000, sizeof(char)); 
 	char *buf = calloc(100, sizeof(char));
+
 	int run1;
 	int run2;
-	//while(1){
+  //while(1){
 	run1 = 0;
 	run2 = 0;
 	//container=calloc(1, sizeof(char**));
 	//container[0]=calloc(1, sizeof(char*));
 	//input = calloc(1000, sizeof(char));
 	//buf = calloc(100, sizeof(char));
+
 	fgets(input, 1000, stdin);
 	//if(strcmp(input, "quit")==0 || strcmp(input, "exit")==0) break;
 	if((buf = strtok(input, " \n\0"))==NULL){ 
