@@ -22,14 +22,15 @@ int main(int argc, char *argv[]){
 	struct clientbuf query;
 	struct clientbuf response;
 	response.mtype = ANSWER;
-	query.mtext=calloc(1, sizeof(char));
-	response.mtext=calloc(1, sizeof(char));
+	//query.mtext=calloc(1, sizeof(char));
+	//response.mtext=calloc(1, sizeof(char));
 	while(1){
-		msgrcv(queue, &query, MSGSIZE, 0, MSG_NOERROR);
+		while(msgrcv(queue, &query, MSGSIZE, 0, MSG_NOERROR)==-1);
 		printf("Received message\n");
 		if(query.mtype==ECHO){
 			response.mtext = realloc(response.mtext,(strlen(query.mtext)+1)*sizeof(char));
 			strcpy(response.mtext, query.mtext);
+			usleep(100);
 			msgsnd(query.qid, &response, MSGSIZE, MSG_NOERROR);
 		}else if(query.mtype==WERS){
 			response.mtext = realloc(response.mtext,(strlen(query.mtext)+1)*sizeof(char));
@@ -40,20 +41,23 @@ int main(int argc, char *argv[]){
 				}
 				else response.mtext[i]=query.mtext[i];
 			}
+			usleep(100);
 			msgsnd(query.qid, &response, MSGSIZE, MSG_NOERROR);
 		}else if(query.mtype==TIME){
 			response.mtext = realloc(response.mtext,(17)*sizeof(char));
 			tm = *localtime(&t);
 			sprintf(response.mtext, "%d-%d-%d %d:%d", 
 			tm.tm_mday, tm.tm_mon, tm.tm_year+1900, tm.tm_hour, tm.tm_min);
+			usleep(100);
 			msgsnd(query.qid, &response, MSGSIZE, MSG_NOERROR);
 		}else if(query.mtype==STOP){
+			usleep(100);	
 			msgctl(queue, IPC_RMID, NULL);
 			exit(0);
 		}
 		printf("Processed message\n");
-		//if(response.mtext!=NULL) free(response.mtext);
-		//if(query.mtext!=NULL) free(query.mtext);
+		if(response.mtext!=NULL) free(response.mtext);
+		if(query.mtext!=NULL) free(query.mtext);
 	}
 	return 0;
 }
