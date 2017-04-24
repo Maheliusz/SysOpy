@@ -12,7 +12,7 @@
 
 struct clientbuf{
 	long mtype;
-	char *mtext;
+	char mtext[128];
 	int qid;
 };
 
