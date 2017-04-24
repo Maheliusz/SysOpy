@@ -2,6 +2,8 @@
 
 int queue;
 int stop;
+time_t t;
+struct tm *tmm;
 
 void server_stop(){
 	struct msqid_ds stat;
@@ -25,11 +27,9 @@ int main(int argc, char *argv[]){
 	if(queue==-1){
 		printf("Can't create queue\n");
 		exit(1);
-	}
-	char tmp[16];
-	time_t t = time(NULL);
+	} 
+	time(&t);
 	signal(SIGINT, finish);
-	struct tm tm;
 	struct clientbuf query;
 	//struct clientbuf response;
 	query.mtype = ANSWER;
@@ -37,35 +37,32 @@ int main(int argc, char *argv[]){
 		while(msgrcv(queue, &query, MSGSIZE, 0, 0)==-1);
 		printf("Received message\n");
 		if(query.mtype==ECHO){
-			printf("Arg:%s\n", query.mtext);
+			//printf("Arg:%s\n", query.mtext);
 			//usleep(100);
-			printf("Echo\n");
+			//printf("Echo\n");
 			msgsnd(query.qid, &query, MSGSIZE, 0);
 		}else if(query.mtype==WERS){
-			printf("Arg:%s\n", query.mtext);
+			//printf("Arg:%s\n", query.mtext);
 			for(int i=0; i<strlen(query.mtext); i++){
 				if((int)query.mtext[i]>=97&&(int)query.mtext[i]<=122){
 					query.mtext[i]=query.mtext[i]-32;
 				}
 				else query.mtext[i]=query.mtext[i];
 			}
-			printf("Uppercase\n");
+			//printf("Uppercase\n");
 			//usleep(100);
 			msgsnd(query.qid, &query, MSGSIZE, 0);
 		}else if(query.mtype==TIME){
-			tm = *localtime(&t);
-			//tmp = realloc(tmp, 17*sizeof(char));
-			sprintf(tmp, "%d-%d-%d %d:%d", 
-			tm.tm_mday, tm.tm_mon, tm.tm_year+1900, tm.tm_hour, tm.tm_min);
-			strncpy(query.mtext, tmp, strlen(tmp));
+			tmm = localtime(&t);
 			//usleep(100);
-			printf("Sending time\n");
+			//printf("Sending time\n");
+			strftime(query.mtext, 128, "%c", tmm);
 			msgsnd(query.qid, &query, MSGSIZE, 0);
 		}else if(query.mtype==STOP){
 			//usleep(100);
 			stop=1;
-			printf("Stopping server\n");
-			exit(0);
+			//printf("Stopping server\n");
+			//exit(0);
 		}
 		printf("Processed message\n");
 		if(stop) server_stop();
