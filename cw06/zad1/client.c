@@ -22,48 +22,42 @@ int main(int argc, char *argv[]){
 		printf("Can't connect to server\n");
 		exit(1);
 	}
-	char *line = NULL;
-	char *buf = NULL;
-	char *tmp = NULL;
+	char *line = calloc(128, sizeof(char));
+	char *buf = calloc(128, sizeof(char));
 	struct clientbuf query;
-	struct clientbuf response;
+	//struct clientbuf response;
 	query.qid=privq;
-	//line = calloc(1, sizeof(char));
-	//buf = calloc(1, sizeof(char));
 	while(1){
-		line = realloc(line, 128*sizeof(char));
-		tmp = realloc(line, 128*sizeof(char));
-		buf = realloc(buf, 128*sizeof(char));
 		printf("\n>>> ");
 		fgets(line, 128, stdin);
-		strcpy(tmp, line);
-		buf = strtok(tmp, " \n\0");
+		buf = strtok(line, " \n\0");
 		if(strcmp(buf, "echo")==0){
 			query.mtype = ECHO;
 			buf = strtok(NULL, "\n\0");
-			query.mtext = realloc(query.mtext,(strlen(buf)+1)*sizeof(char));
 			//query.mtext = buf;
-			strcpy(query.mtext, buf);
+			strncpy(query.mtext, buf, strlen(buf));
+			//printf("Arg:%s\n", query.mtext);
+			query.mtext[strlen(buf)]='\0';
 			msgsnd(queue, &query, MSGSIZE, 0);
 			//usleep(100);
-			msgrcv(privq, (void*)&response, MSGSIZE, 0, 0);
-			printf("%s\n", response.mtext);
+			msgrcv(privq, &query, MSGSIZE, 0, 0);
+			printf("%s\n", query.mtext);
 		}else if(strcmp(buf, "wers")==0){
 			query.mtype = WERS;
 			buf = strtok(NULL, "\n\0");
-			//query.mtext = realloc(query.mtext, (strlen(buf)+1)*sizeof(char));
-			//strcpy(query.mtext, buf);
-			query.mtext = buf;
+			strncpy(query.mtext, buf, strlen(buf));
+			query.mtext[strlen(buf)]='\0';
+			//printf("Arg:%s\n", query.mtext);
 			msgsnd(queue, &query, MSGSIZE, 0);
 			//usleep(100);
-			msgrcv(privq, (void*)&response, MSGSIZE, 0, 0);
-			printf("\n%s\n", response.mtext);
+			msgrcv(privq, &query, MSGSIZE, 0, 0);
+			printf("\n%s\n", query.mtext);
 		}else if(strcmp(buf, "time")==0){
 			query.mtype = TIME;
 			msgsnd(queue, &query, MSGSIZE, 0);
 			//usleep(100);
-			msgrcv(privq, (void*)&response, MSGSIZE, 0, 0);
-			printf("\n%s\n", response.mtext);
+			msgrcv(privq, &query, MSGSIZE, 0, 0);
+			printf("\n%s\n", query.mtext);
 		}else if(strcmp(buf, "stop")==0){
 			query.mtype = STOP;
 			msgsnd(queue, &query, MSGSIZE, 0);
@@ -71,11 +65,6 @@ int main(int argc, char *argv[]){
 			msgctl(privq, IPC_RMID, NULL);
 			exit(0);
 		}
-		
-		//if(buf!=NULL) free(buf);
-		//if(line!=NULL) free(line);
-		//if(query.mtext!=NULL) free(query.mtext);
-		//if(response.mtext!=NULL) free(response.mtext);
 	}
 	return 0;
 }
