@@ -2,8 +2,6 @@
 
 int queue;
 int stop;
-time_t t;
-struct tm *tmm;
 
 void server_stop(){
 	struct msqid_ds stat;
@@ -28,7 +26,8 @@ int main(int argc, char *argv[]){
 		printf("Can't create queue\n");
 		exit(1);
 	} 
-	time(&t);
+	time_t t;
+	struct tm tmm;
 	signal(SIGINT, finish);
 	struct clientbuf query;
 	//struct clientbuf response;
@@ -53,7 +52,8 @@ int main(int argc, char *argv[]){
 			//usleep(100);
 			msgsnd(query.qid, &query, MSGSIZE, 0);
 		}else if(query.mtype==TIME){
-			tmm = localtime(&t);
+			t = time(NULL);
+			tmm = *localtime(&t);
 			//usleep(100);
 			//printf("Sending time\n");
 			strftime(query.mtext, 128, "%c", tmm);
