@@ -1,4 +1,11 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<mqueue.h>
+#include"header.h"
+
+mqd_t serverq;
+
+void finish(int signo){
+	
+}
+
+int main(int argc, char *argv[]){
+
+}
