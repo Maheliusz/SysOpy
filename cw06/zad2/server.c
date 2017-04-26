@@ -49,48 +49,32 @@ int main(int argc, char *argv[]){
 				exit(1);
 			}
 		}
-		printf("%s\n", line);
-		buf = strtok(line, " \n");
-		//sscanf(line, "%s %s %s", buf, addr, msg);
+		//printf("%s\n", line);
+		sscanf(line, "%s %s %s\n", buf, addr, msg);
 		printf("Received message\n");
-		if(strcmp(buf, "echo")){
-			buf = strtok(NULL, " \n");
-			//addr = realloc(addr, (strlen(buf)+1)*sizeof(char));
-			strcpy(addr, buf);
-			buf = strtok(NULL, "\n");
-			printf("Buf: %s\n", buf);
+		if(strcmp(buf, "echo")==0){
+			printf("Msg: %s\n", msg);
 			client = mq_open(addr, O_WRONLY);
-			strcpy(msg, buf);
 			mq_send(client, msg, 128, 0);
 			mq_close(client);
-		}else if(strcmp(buf, "wers")){
-			buf = strtok(NULL, " \n");
-			//addr = realloc(addr, (strlen(buf)+1)*sizeof(char));
-			strcpy(addr, buf);
-			buf = strtok(NULL, "\n");
-			printf("Buf: %s\n", buf);
+		}else if(strcmp(buf, "wers")==0){
+			printf("Msg: %s\n", msg);
 			for(int i=0; i<128; i++){
-				if(buf[i]=='\0') break;
-				if(buf[i]>=97&&buf[i]<=122) buf[i]=buf[i]-32;
+				if((int)msg[i]>=97&&(int)msg[i]<=122) line[i]=msg[i]-32;
+				else line[i]=msg[i];
+				if(msg[i]=='\0') break;
 			}
-			client = mq_open(addr, O_RDWR);
-			strcpy(msg, buf);
-			mq_send(client, msg, 128, 0);
+			client = mq_open(addr, O_WRONLY);
+			mq_send(client, line, 128, 0);
 			mq_close(client);
-		}else if(strcmp(buf, "time")){
-			buf = strtok(NULL, " \n");
-			//addr = realloc(addr, (strlen(buf)+1)*sizeof(char));
-			strcpy(addr, buf);
+		}else if(strcmp(buf, "time")==0){
 			t = time(NULL);
 			tmm = *localtime(&t);
-			//usleep(100);
-			//printf("Sending time\n");
 			strftime(buf, 128, "%c", &tmm);
-			client = mq_open(addr, O_RDWR);
-			strcpy(msg, buf);
+			client = mq_open(addr, O_WRONLY);
 			mq_send(client, msg, 128, 0);
 			mq_close(client);
-		}else if(strcmp(buf, "stop")){
+		}else if(strcmp(buf, "stop")==0){
 			stop=1;
 		}
 		printf("Processed message\n");

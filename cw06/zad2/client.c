@@ -30,35 +30,35 @@ int main(int argc, char *argv[]){
 	char msg[MAXSIZE];
 	while(1){
 		printf("\n>>> ");
-		fgets(line, MAXSIZE, stdin);
+		fgets(line, 100, stdin);
 		buf = strtok(line, " \n");
 		if(strcmp(buf, "echo")==0){
 			buf = strtok(NULL, "\n");
-			sprintf(buf, "%s %s %s\n", "echo", path, buf);
+			sprintf(msg, "%s %s %s\n", "echo", path, buf);
 			server = mq_open(PROJECTQ, O_WRONLY);
-			mq_send(server, buf, MAXSIZE, 0);
+			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
 			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "wers")==0){
 			buf = strtok(NULL, "\n");
-			sprintf(buf, "%s %s %s\n", "echo", path, buf);
+			sprintf(msg, "%s %s %s\n", "wers", path, buf);
 			server = mq_open(PROJECTQ, O_WRONLY);
-			mq_send(server, buf, MAXSIZE, 0);
+			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
 			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "time")==0){
-			sprintf(buf, "%s %s\n", "time", path);
+			sprintf(msg, "%s %s %s\n", "time", path, "-");
 			server = mq_open(PROJECTQ, O_WRONLY);
-			mq_send(server, buf, MAXSIZE, 0);
+			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
 			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "stop")==0){
-			sprintf(buf, "%s %s\n", "stop", path);
+			sprintf(msg, "%s %s %s\n", "stop", path, "-");
 			server = mq_open(PROJECTQ, O_WRONLY);
-			mq_send(server, buf, MAXSIZE, 0);
+			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
 		}else if(strcmp(buf, "exit")==0){
 			finish(0);
