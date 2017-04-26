@@ -1,84 +1,67 @@
 #include"header.h"
 
-mqd_t serverq;
+mqd_t server;
 mqd_t client;
 char path[16];
 
 void finish(int signo){
-	mq_close(serverq);
+	mq_close(server);
 	mq_close(client);
-	while(mq_unlink(path)==-1);
+	mq_unlink(path);
 	exit(0);
 }
 
 int main(int argc, char *argv[]){
 	path[0]='/';
-	path[15]='\0';
 	srand(time(NULL));
 	struct mq_attr attr;
-	attr.mq_flags=O_NONBLOCK;
-	attr.mq_maxmsg = 20;
-	attr.mq_msgsize = MSGSIZE;
+	attr.mq_flags=0;
+	attr.mq_maxmsg = 10;
+	attr.mq_msgsize = MAXSIZE;
 	attr.mq_curmsgs=0;
 	do{
-		for(int i=1; i<15; i++){
-			path[i]=(rand()%26)+97;
+		for(int i=1; i<16; i++){
+			path[i]=(char)((rand()%26)+'a');
 		}
-	}while((client=mq_open(path, O_RDWR | O_CREAT | O_EXCL | O_NONBLOCK, 
-	0777, &attr))==-1);
+	}while((client=mq_open(path, O_RDONLY | O_CREAT, 0644, &attr))==-1);
 	signal(SIGINT, finish);
 	char *line = calloc(100, sizeof(char));
 	char *buf = calloc(100, sizeof(char));
-	char msg[128];
+	char msg[MAXSIZE];
 	while(1){
 		printf("\n>>> ");
-		fgets(line, 128, stdin);
-		buf = strtok(line, " \n\0");
+		fgets(line, MAXSIZE, stdin);
+		buf = strtok(line, " \n");
 		if(strcmp(buf, "echo")==0){
-			strcat(msg, buf);
-			strcat(msg, " ");
-			strcat(msg, path);
-			strcat(msg, " ");
-			buf = strtok(NULL, "\n\0");
-			strcat(msg, buf);
-			serverq = mq_open(PROJECTQ, O_RDWR);
-			mq_send(serverq, buf, 128, 1);
-			mq_close(serverq);
-			while(mq_receive(client, msg, 128, NULL)<=0);
+			buf = strtok(NULL, "\n");
+			sprintf(buf, "%s %s %s\n", "echo", path, buf);
+			server = mq_open(PROJECTQ, O_WRONLY);
+			mq_send(server, buf, MAXSIZE, 0);
+			mq_close(server);
+			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "wers")==0){
-			strcat(msg, buf);
-			strcat(msg, " ");
-			strcat(msg, path);
-			strcat(msg, " ");
-			buf = strtok(NULL, "\n\0");
-			strcat(msg, buf);
-			serverq = mq_open(PROJECTQ, O_RDWR);
-			mq_send(serverq, buf, 128, 1);
-			mq_close(serverq);
-			while(mq_receive(client, msg, 128, NULL)<=0);
+			buf = strtok(NULL, "\n");
+			sprintf(buf, "%s %s %s\n", "echo", path, buf);
+			server = mq_open(PROJECTQ, O_WRONLY);
+			mq_send(server, buf, MAXSIZE, 0);
+			mq_close(server);
+			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "time")==0){
-			strcat(msg, buf);
-			strcat(msg, " ");
-			strcat(msg, path);
-			strcat(msg, " ");
-			buf = strtok(NULL, "\n\0");
-			strcat(msg, buf);
-			serverq = mq_open(PROJECTQ, O_RDWR);
-			mq_send(serverq, buf, 128, 1);
-			mq_close(serverq);
-			while(mq_receive(client, msg, 128, NULL)<=0);
+			sprintf(buf, "%s %s\n", "time", path);
+			server = mq_open(PROJECTQ, O_WRONLY);
+			mq_send(server, buf, MAXSIZE, 0);
+			mq_close(server);
+			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "stop")==0){
-			strcat(msg, buf);
-			strcat(msg, " ");
-			strcat(msg, path);
-			serverq = mq_open(PROJECTQ, O_RDWR);
-			mq_send(serverq, buf, 128, 1);
-			mq_close(serverq);
+			sprintf(buf, "%s %s\n", "stop", path);
+			server = mq_open(PROJECTQ, O_WRONLY);
+			mq_send(server, buf, MAXSIZE, 0);
+			mq_close(server);
 		}else if(strcmp(buf, "exit")==0){
-			finish(NULL);
+			finish(0);
 		}
 	}
 }
