@@ -8,7 +8,7 @@ void finish(int signo){
 	mq_close(server);
 	mq_close(client);
 	mq_unlink(path);
-	exit(0);
+	exit(signo);
 }
 
 int main(int argc, char *argv[]){
@@ -25,10 +25,12 @@ int main(int argc, char *argv[]){
 		}
 	}while((client=mq_open(path, O_RDONLY | O_CREAT, 0644, &attr))==-1);
 	signal(SIGINT, finish);
+	ssize_t readBytes=0;
 	char *line = calloc(100, sizeof(char));
 	char *buf = calloc(100, sizeof(char));
 	char msg[MAXSIZE];
 	while(1){
+		//fflush(stdout);
 		printf("\n>>> ");
 		fgets(line, 100, stdin);
 		buf = strtok(line, " \n");
@@ -38,7 +40,13 @@ int main(int argc, char *argv[]){
 			server = mq_open(PROJECTQ, O_WRONLY);
 			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
-			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
+			while((readBytes = mq_receive(client, msg, MAXSIZE, NULL))<=0){
+				if(readBytes<0){
+					printf("Cannot read from queue\n");
+					perror(NULL);
+					finish(1);
+				}
+			}
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "wers")==0){
 			buf = strtok(NULL, "\n");
@@ -46,14 +54,26 @@ int main(int argc, char *argv[]){
 			server = mq_open(PROJECTQ, O_WRONLY);
 			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
-			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
+			while((readBytes = mq_receive(client, msg, MAXSIZE, NULL))<=0){
+				if(readBytes<0){
+					printf("Cannot read from queue\n");
+					perror(NULL);
+					finish(1);
+				}
+			}
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "time")==0){
 			sprintf(msg, "%s %s %s\n", "time", path, "-");
 			server = mq_open(PROJECTQ, O_WRONLY);
 			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
-			while(mq_receive(client, msg, MAXSIZE, NULL)<=0);
+			while((readBytes = mq_receive(client, msg, MAXSIZE, NULL))<=0){
+				if(readBytes<0){
+					printf("Cannot read from queue\n");
+					perror(NULL);
+					finish(1);
+				}
+			}
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "stop")==0){
 			sprintf(msg, "%s %s %s\n", "stop", path, "-");

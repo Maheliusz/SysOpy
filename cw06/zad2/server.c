@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 	}
 	ssize_t readBytes=0;
 	time_t t;
-	struct tm tmm;
+	struct tm tmm = {0};
 	char line[MAXSIZE];
 	char msg[MAXSIZE];
 	char *buf = calloc(MAXSIZE, sizeof(char));
@@ -53,12 +53,12 @@ int main(int argc, char *argv[]){
 		sscanf(line, "%s %s %s\n", buf, addr, msg);
 		printf("Received message\n");
 		if(strcmp(buf, "echo")==0){
-			printf("Msg: %s\n", msg);
+			printf("MsgE: %s\n", msg);
 			client = mq_open(addr, O_WRONLY);
 			mq_send(client, msg, 128, 0);
 			mq_close(client);
 		}else if(strcmp(buf, "wers")==0){
-			printf("Msg: %s\n", msg);
+			printf("MsgW: %s\n", msg);
 			for(int i=0; i<128; i++){
 				if((int)msg[i]>=97&&(int)msg[i]<=122) line[i]=msg[i]-32;
 				else line[i]=msg[i];
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
 		}else if(strcmp(buf, "time")==0){
 			t = time(NULL);
 			tmm = *localtime(&t);
-			strftime(buf, 128, "%c", &tmm);
+			strftime(msg, 128, "%c", &tmm);
 			client = mq_open(addr, O_WRONLY);
 			mq_send(client, msg, 128, 0);
 			mq_close(client);

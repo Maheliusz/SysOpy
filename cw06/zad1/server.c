@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	} 
 	time_t t;
-	struct tm tmm;
+	struct tm tmm = {0};
 	signal(SIGINT, finish);
 	struct clientbuf query;
 	//struct clientbuf response;
