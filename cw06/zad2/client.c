@@ -40,12 +40,15 @@ int main(int argc, char *argv[]){
 			server = mq_open(PROJECTQ, O_WRONLY);
 			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
+			memset(msg, 0, MAXSIZE);
+			//readBytes = mq_receive(client, msg, MAXSIZE, NULL);
 			while((readBytes = mq_receive(client, msg, MAXSIZE, NULL))<=0){
 				if(readBytes<0){
 					printf("Cannot read from queue\n");
 					perror(NULL);
 					finish(1);
 				}
+				sleep(1);
 			}
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "wers")==0){
@@ -54,12 +57,15 @@ int main(int argc, char *argv[]){
 			server = mq_open(PROJECTQ, O_WRONLY);
 			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
+			memset(msg, 0, MAXSIZE);
+			//readBytes = mq_receive(client, msg, MAXSIZE, NULL);
 			while((readBytes = mq_receive(client, msg, MAXSIZE, NULL))<=0){
 				if(readBytes<0){
 					printf("Cannot read from queue\n");
 					perror(NULL);
 					finish(1);
 				}
+				sleep(1);
 			}
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "time")==0){
@@ -67,12 +73,15 @@ int main(int argc, char *argv[]){
 			server = mq_open(PROJECTQ, O_WRONLY);
 			mq_send(server, msg, MAXSIZE, 0);
 			mq_close(server);
+			memset(msg, 0, MAXSIZE);
+			//readBytes = mq_receive(client, msg, MAXSIZE, NULL);
 			while((readBytes = mq_receive(client, msg, MAXSIZE, NULL))<=0){
 				if(readBytes<0){
 					printf("Cannot read from queue\n");
 					perror(NULL);
 					finish(1);
 				}
+				sleep(1);
 			}
 			printf("%s\n", msg);
 		}else if(strcmp(buf, "stop")==0){
@@ -83,5 +92,6 @@ int main(int argc, char *argv[]){
 		}else if(strcmp(buf, "exit")==0){
 			finish(0);
 		}
+		memset(msg, 0, MAXSIZE);
 	}
 }

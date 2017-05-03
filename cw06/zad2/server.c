@@ -37,8 +37,8 @@ int main(int argc, char *argv[]){
 	struct tm tmm = {0};
 	char line[MAXSIZE];
 	char msg[MAXSIZE];
-	char *buf = calloc(MAXSIZE, sizeof(char));
-	char *addr = calloc(MAXSIZE, sizeof(char));
+	char buf[MAXSIZE];
+	char addr[MAXSIZE];
 	int stop=0;
 	signal(SIGINT, finish);
 	while(1){
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 		if(strcmp(buf, "echo")==0){
 			printf("MsgE: %s\n", msg);
 			client = mq_open(addr, O_WRONLY);
-			mq_send(client, msg, 128, 0);
+			mq_send(client, msg, 128, 1);
 			mq_close(client);
 		}else if(strcmp(buf, "wers")==0){
 			printf("MsgW: %s\n", msg);
@@ -65,19 +65,23 @@ int main(int argc, char *argv[]){
 				if(msg[i]=='\0') break;
 			}
 			client = mq_open(addr, O_WRONLY);
-			mq_send(client, line, 128, 0);
+			mq_send(client, line, 128, 1);
 			mq_close(client);
 		}else if(strcmp(buf, "time")==0){
 			t = time(NULL);
 			tmm = *localtime(&t);
 			strftime(msg, 128, "%c", &tmm);
 			client = mq_open(addr, O_WRONLY);
-			mq_send(client, msg, 128, 0);
+			mq_send(client, msg, 128, 1);
 			mq_close(client);
 		}else if(strcmp(buf, "stop")==0){
 			stop=1;
 		}
 		printf("Processed message\n");
 		if(stop) server_stop();
+		memset(msg, 0, MAXSIZE);
+		memset(line, 0, MAXSIZE);
+		memset(buf, 0, MAXSIZE);
+		memset(addr, 0, MAXSIZE);
 	}
 }
