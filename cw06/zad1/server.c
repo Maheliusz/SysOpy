@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 		exit(1);
 	} 
 	time_t t;
-	struct tm tmm = {0};
+	struct tm *tmm = {0};
 	signal(SIGINT, finish);
 	struct clientbuf query;
 	//struct clientbuf response;
@@ -53,10 +53,11 @@ int main(int argc, char *argv[]){
 			msgsnd(query.qid, &query, MSGSIZE, 0);
 		}else if(query.mtype==TIME){
 			t = time(NULL);
-			tmm = *localtime(&t);
+			tmm = localtime(&t);
 			//usleep(100);
 			//printf("Sending time\n");
-			strftime(query.mtext, 128, "%c", tmm);
+			if(tmm!=NULL) strftime(query.mtext, 128, "%c", tmm);
+			else strcpy(query.mtext, "0");
 			msgsnd(query.qid, &query, MSGSIZE, 0);
 		}else if(query.mtype==STOP){
 			//usleep(100);

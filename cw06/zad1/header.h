@@ -19,4 +19,4 @@ struct clientbuf{
 enum Type {ECHO = 1, WERS, TIME, STOP, ANSWER};
 
 static const char PROJECTID = 'a';
-static const int MSGSIZE = 4096;
+static const int MSGSIZE = sizeof(struct clientbuf)-sizeof(long);
