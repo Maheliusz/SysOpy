@@ -14,7 +14,7 @@
 int semphr;
 int shm;
 pid_t ppid;
-int *queue;
+struct qnode *queue;
 
 union semun{
 	int val;
@@ -31,8 +31,8 @@ void finish(int signo){
 int main(int argc, char *argv[]){
 	ppid = getpid();
 	semphr = semget(ftok(getenv("HOME"), MAXSEM), MAXSEM+1, 0777 | IPC_CREAT);
-	shm = shmget(ftok(getenv("HOME"), MAXSEM), 10*sizeof(int), 0777 | IPC_CREAT);
-	queue = (int *)shmat(shm, NULL, 0);
+	shm = shmget(ftok(getenv("HOME"), MAXSEM), 10*sizeof(struct qnode), 0777 | IPC_CREAT);
+	queue = (struct qnode*)shmat(shm, NULL, 0);
 	union semun attr;
 	attr.val=1;
 	for(int i=1; i<MAXSEM+1; i++)semctl(semphr, i, SETVAL, attr);
@@ -41,9 +41,8 @@ int main(int argc, char *argv[]){
 	signal(SIGINT, finish);
 	struct timespec tmspec;
 	struct sembuf buf;
-	int rnr=0;
-	int clientid;
 	signal(SIGINT, finish);
+	struct qnode res;
 	while(1){
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda zasypia\n", (int)tmspec.tv_sec);
@@ -52,14 +51,12 @@ int main(int argc, char *argv[]){
 		semop(semphr, &buf, 1);
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda zostaje obudzony\n", (int)tmspec.tv_sec);
-		while((clientid=queue[rnr])==-1){
-			rnr=(rnr+1)%MAXSEM;
-		}
-		printf("%d:Golibroda goli klienta %d\n", (int)tmspec.tv_sec, clientid);
-		buf.sem_num=rnr;
+		res=get_value(queue);
+		printf("%d:Golibroda goli klienta %d\n", (int)tmspec.tv_sec, res.pid);
+		buf.sem_num=res.semnum;
 		buf.sem_op=1;
 		semop(semphr, &buf, 1);
-		printf("%d:Golibroda konczy strzyzenie klienta %d\n", (int)tmspec.tv_sec, clientid);
+		printf("%d:Golibroda konczy strzyzenie klienta %d\n", (int)tmspec.tv_sec, res.pid);
 	}
 	return 0;
 }
