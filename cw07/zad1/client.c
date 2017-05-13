@@ -13,7 +13,7 @@
 
 int semphr;
 int shm;
-int *queue;
+struct qnode *queue;
 int *clients;
 
 void fin_client(int signo){
@@ -28,8 +28,8 @@ int main(int argc, char *argv[]){
 	unsigned int cutcnt = atoi(argv[2]);
 	clients = calloc(clientcnt, sizeof(int));
 	semphr = semget(ftok(getenv("HOME"), MAXSEM), MAXSEM+1, 0);
-	shm = shmget(ftok(getenv("HOME"), MAXSEM), 10*sizeof(int), 0);
-	queue = (int *)shmat(shm, NULL, 0);
+	shm = shmget(ftok(getenv("HOME"), MAXSEM), 10*sizeof(struct qnode), 0);
+	queue = (struct qnode *)shmat(shm, NULL, 0);
 	signal(SIGINT, fin_client);
 	struct timespec tmspec;
 	struct sembuf buf;
@@ -38,6 +38,8 @@ int main(int argc, char *argv[]){
 		if((pid=fork())==0) break;
 	}
 	if(pid==0){
+		struct qnode node;
+		node.pid=getpid();
 		buf.sem_flg=0;
 		int cntr=0;
 		int place;
@@ -52,7 +54,8 @@ int main(int argc, char *argv[]){
 					buf.sem_op=-1;
 					semop(semphr, &buf, 1);
 					place=i;
-					queue[place]=getpid();
+					node.semnum=i;
+					add_to_queue(node, queue);
 					clock_gettime(CLOCK_REALTIME, &tmspec);
 					printf("%d:Klient %d zajmuje %d miejsce w poczekalni, budzi golibrode\n",
 						(int)tmspec.tv_sec, getpid(), i);
@@ -61,7 +64,6 @@ int main(int argc, char *argv[]){
 					semop(semphr, &buf, 1);
 					printf("%d:Klient %d zostal ostrzyzony %d raz, ponownie staje w kolejce\n",
 						(int)tmspec.tv_sec, getpid(), ++cntr);
-					queue[place]=-1;
 					buf.sem_num=i;
 					buf.sem_op=1;
 					semop(semphr, &buf, 1);
@@ -78,5 +80,7 @@ int main(int argc, char *argv[]){
 		printf("%d:Klient %d zostal ostrzyzony %d/%d razy, opuszcza zaklad\n", 
 			(int)tmspec.tv_sec, getpid(), cntr, cutcnt);
 	}
+	//else wait(NULL);
+	fin_client(0);
 	return 0;
 }
