@@ -31,7 +31,7 @@ void finish(int signo){
 int main(int argc, char *argv[]){
 	ppid = getpid();
 	semphr = semget(ftok(getenv("HOME"), MAXSEM), MAXSEM+1, 0777 | IPC_CREAT);
-	shm = shmget(ftok(getenv("HOME"), MAXSEM), 10*sizeof(struct qnode), 0777 | IPC_CREAT);
+	shm = shmget(ftok(getenv("HOME"), MAXSEM), MAXSEM*sizeof(struct qnode), 0777 | IPC_CREAT);
 	queue = (struct qnode*)shmat(shm, NULL, 0);
 	union semun attr;
 	attr.val=1;
@@ -52,10 +52,12 @@ int main(int argc, char *argv[]){
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda zostaje obudzony\n", (int)tmspec.tv_sec);
 		res=get_value(queue);
+		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda goli klienta %d\n", (int)tmspec.tv_sec, res.pid);
 		buf.sem_num=res.semnum;
 		buf.sem_op=1;
 		semop(semphr, &buf, 1);
+		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda konczy strzyzenie klienta %d\n", (int)tmspec.tv_sec, res.pid);
 	}
 	return 0;
