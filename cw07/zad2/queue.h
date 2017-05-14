@@ -16,8 +16,10 @@ static const int MAXSEM = 10;
 
 struct qnode{
 	int pid;
-	int semnum;
+	char semnum[8];
 };
+
+void generate_path(char *res);
 
 struct qnode get_value(struct qnode *node);
 

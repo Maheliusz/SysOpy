@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 	unsigned int cutcnt = atoi(argv[2]);
 	clients = calloc(clientcnt, sizeof(int));
 	semphr = semget(ftok(getenv("HOME"), MAXSEM), MAXSEM+1, 0);
-	shm = shmget(ftok(getenv("HOME"), MAXSEM), 10*sizeof(struct qnode), 0);
+	shm = shmget(ftok(getenv("HOME"), MAXSEM), MAXSEM*sizeof(struct qnode), 0);
 	queue = (struct qnode *)shmat(shm, NULL, 0);
 	signal(SIGINT, fin_client);
 	struct timespec tmspec;
@@ -62,8 +62,12 @@ int main(int argc, char *argv[]){
 					buf.sem_num=0;
 					buf.sem_op=1;
 					semop(semphr, &buf, 1);
-					printf("%d:Klient %d zostal ostrzyzony %d raz, ponownie staje w kolejce\n",
-						(int)tmspec.tv_sec, getpid(), ++cntr);
+					buf.sem_num=i;
+					buf.sem_op=-1;
+					semop(semphr, &buf, 1);
+					clock_gettime(CLOCK_REALTIME, &tmspec);
+					printf("%d:Klient %d zostal ostrzyzony %d/%d razy, ponownie staje w kolejce\n",
+					(int)tmspec.tv_sec, getpid(), ++cntr, cutcnt);
 					buf.sem_num=i;
 					buf.sem_op=1;
 					semop(semphr, &buf, 1);
