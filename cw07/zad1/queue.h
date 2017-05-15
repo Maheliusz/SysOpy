@@ -18,6 +18,8 @@ struct qnode{
 
 struct qnode get_value(struct qnode *node);
 
+void init_queue(struct qnode* node);
+
 void add_to_queue(struct qnode in, struct qnode *node);
 
 int is_full(struct qnode* node);

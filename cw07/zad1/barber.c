@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
 	semphr = semget(ftok(getenv("HOME"), MAXSEM), MAXSEM+1, 0777 | IPC_CREAT);
 	shm = shmget(ftok(getenv("HOME"), MAXSEM), MAXSEM*sizeof(struct qnode), 0777 | IPC_CREAT);
 	queue = (struct qnode*)shmat(shm, NULL, 0);
+	init_queue(queue);
 	union semun attr;
 	attr.val=1;
 	for(int i=1; i<MAXSEM+1; i++)semctl(semphr, i, SETVAL, attr);
@@ -51,6 +52,7 @@ int main(int argc, char *argv[]){
 		semop(semphr, &buf, 1);
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda zostaje obudzony\n", (int)tmspec.tv_sec);
+		sleep(1);
 		res=get_value(queue);
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda goli klienta %d\n", (int)tmspec.tv_sec, res.pid);

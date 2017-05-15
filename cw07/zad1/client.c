@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
 					buf.sem_op=-1;
 					semop(semphr, &buf, 1);
 					clock_gettime(CLOCK_REALTIME, &tmspec);
-					printf("%d:Klient %d zostal ostrzyzony %d/%d razy, ponownie staje w kolejce\n",
+					printf("%d:Klient %d zostaje ostrzyzony %d/%d razy, ponownie staje w kolejce\n",
 					(int)tmspec.tv_sec, getpid(), ++cntr, cutcnt);
 					buf.sem_num=i;
 					buf.sem_op=1;
