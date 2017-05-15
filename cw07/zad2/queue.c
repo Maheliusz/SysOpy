@@ -3,9 +3,10 @@
 void generate_path(char *res){
 	srand(time(NULL));
 	res[0]='/';
-	for(int i=1; i<8; i++){
+	for(int i=1; i<7; i++){
 		res[i]=(char)(rand()%26)+97;
 	}
+	res[7]='\0';
 }
 
 int is_full(struct qnode* node){

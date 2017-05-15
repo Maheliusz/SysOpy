@@ -15,6 +15,9 @@ int semphr;
 int shm;
 struct qnode *queue;
 int *clients;
+int qshm;
+int *qlenshm;
+int qlen;
 
 void fin_client(int signo){
 	printf("Klient %d konczy prace\n", getpid());
@@ -26,9 +29,13 @@ int main(int argc, char *argv[]){
 	if(argc<3) return 1;
 	unsigned int clientcnt = atoi(argv[1]);
 	unsigned int cutcnt = atoi(argv[2]);
+	qshm = shmget(ftok(getenv("HOME"), 0), sizeof(int), 0);
+	qlenshm = (int *)shmat(qshm, NULL, 0);
+	qlen = qlenshm[0];
+	shmdt(qlenshm);
 	clients = calloc(clientcnt, sizeof(int));
-	semphr = semget(ftok(getenv("HOME"), MAXSEM), MAXSEM+1, 0);
-	shm = shmget(ftok(getenv("HOME"), MAXSEM), MAXSEM*sizeof(struct qnode), 0);
+	semphr = semget(ftok(getenv("HOME"), MAXSEM), qlen+1, 0);
+	shm = shmget(ftok(getenv("HOME"), MAXSEM), qlen*sizeof(struct qnode), 0);
 	queue = (struct qnode *)shmat(shm, NULL, 0);
 	signal(SIGINT, fin_client);
 	struct timespec tmspec;

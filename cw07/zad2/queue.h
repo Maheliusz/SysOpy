@@ -12,6 +12,8 @@
 #include<time.h>
 
 static const int MAXSEM = 10;
+//static const char* BARSEM = "BARBERSEMAPHORE";
+//static const char* SHM = "SHAREDMEMORY";
 
 
 struct qnode{
