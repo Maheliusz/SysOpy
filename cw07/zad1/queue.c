@@ -5,6 +5,13 @@ int is_full(struct qnode* node){
 	return 0;
 }
 
+void init_queue(struct qnode* node){
+	for(int i=0; i<MAXSEM; i++){
+		node[i].pid=-1;
+		node[i].semnum=-1;
+	}
+}
+
 int queue_size(struct qnode* node){
 	int cntr=0;
 	for(int i=0; i<MAXSEM; i++){
@@ -26,14 +33,14 @@ void add_to_queue(struct qnode in, struct qnode *node){
 }
 
 void delete_first(struct qnode *node){
-	int i=0;
-	for(; i<MAXSEM-1; i++){
-		if(node[i].semnum==-1) break;
+	for(int i=0; i<MAXSEM-1; i++){
+		if(node[i].pid==-1){
+			node[i].semnum=-1;
+			break;
+		}
 		node[i].pid=node[i+1].pid;
 		node[i].semnum=node[i+1].semnum;
 	}
-	node[i].pid=-1;
-	node[i].semnum=-1;
 }
 
 struct qnode get_value(struct qnode *node){
