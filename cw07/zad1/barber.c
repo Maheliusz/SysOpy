@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 	queue = (struct qnode*)shmat(shm, NULL, 0);
 	qlenshm = (int *)shmat(qshm, NULL, 0);
 	qlenshm[0]=qlen;
-	init_queue(queue);
+	init_queue(queue, qlen);
 	union semun attr;
 	attr.val=1;
 	//for(int i=1; i<MAXSEM+1; i++)semctl(semphr, i, SETVAL, attr);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]){
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda zostaje obudzony\n", (int)tmspec.tv_sec);
 		sleep(1);
-		res=get_value(queue);
+		res=get_value(queue, qlen);
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda goli klienta %d\n", (int)tmspec.tv_sec, res.pid);
 		buf.sem_num=res.semnum;
