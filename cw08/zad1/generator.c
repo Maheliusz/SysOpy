@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 		for(int j=0; j<1013; j++){
 			str[j]=rand()%26+'a';
 		}
-		fprintf(file, "%08d_%s\n", rand()%256, str);
+		fprintf(file, "%08d-%s\n", i, str);
 	}
 	fclose(file);
 	chmod(name, 0777);

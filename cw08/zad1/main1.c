@@ -5,6 +5,7 @@
 #include<pthread.h>
 #include<fcntl.h>
 #include<unistd.h>
+#include<sys/syscall.h>
 
 int threadnum;
 char *filename;
@@ -14,6 +15,7 @@ char *targetword;
 int file;
 pthread_t *threadid;
 
+/*
 int containsword(char* str, char* word){
 	if(strlen(str)<strlen(word)) return 0;
 	for(int i=0; i<strlen(str)-strlen(word); i++){
@@ -21,6 +23,7 @@ int containsword(char* str, char* word){
 	}
 	return 0;
 }
+*/
 
 void sighandler(int signo){
 	close(file);
@@ -28,6 +31,8 @@ void sighandler(int signo){
 }
 
 void* threadfun(void* args){
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	char buf[1024];
 	char num[8];
 	char str[1014];
@@ -35,16 +40,16 @@ void* threadfun(void* args){
 		read(file, &buf, 1024);
 		strncpy(num, buf, 8);
 		strncpy(str, buf+9, 1014);
-		if(containsword(str, targetword)){
-			printf("Word %s found by thread %d in %s record\n", targetword, (int)(pthread_self()), num);
+		if(strstr(str, targetword)!=NULL){
+			printf("Word %s found by thread %ld in %s record\n", targetword, (long)(pthread_self()), num);
 			break;
 		}
 	}
 	for(int i=0; i<threadnum; i++){
 		if(threadid[i]!=0 && threadid[i]!=pthread_self())
-			pthread_kill(threadid[i], SIGINT);
+			pthread_cancel(threadid[i]);
 	}
-	pthread_exit(0);
+	return NULL;
 }
 
 int main(int argc, char* argv[]){
