@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){
 					semop(semphr, &buf, 1);
 					place=i;
 					node.semnum=i;
-					add_to_queue(node, queue);
+					add_to_queue(node, queue, qlen);
 					clock_gettime(CLOCK_REALTIME, &tmspec);
 					printf("%d:Klient %d zajmuje %d miejsce w poczekalni, budzi golibrode\n",
 						(int)tmspec.tv_sec, getpid(), i);

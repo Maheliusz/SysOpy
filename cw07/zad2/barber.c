@@ -13,30 +13,35 @@ void finish(int signo){
 	printf("Golibroda konczy prace\n");
 	sem_close(clientsem);
 	sem_close(semphr);
-	sem_unlink(getenv("HOME"));
+	sem_unlink("/semaphore");
 	munmap(queue, qlen*sizeof(struct qnode));
-	munmap(qlenshm, sizeof(int));
+	munmap(qlenshm, 2*sizeof(int));
 	close(shm);
 	close(qshm);
-	shm_unlink(getenv("HOME"));
+	shm_unlink("/shm");
+	shm_unlink("/qshm");
 	exit(signo);
 }
 
 int main(int argc, char *argv[]){
 	if(argc<2) return 1;
 	qlen = atoi(argv[1]);
-	qshm = shm_open(getenv("PWD"), O_WRONLY | O_CREAT, 0777);
-	qlenshm = (int *)mmap(NULL, sizeof(int), 
-		PROT_EXEC | PROT_WRITE, MAP_SHARED, qshm, 0);
+	qshm = shm_open("/qshm", O_CREAT|O_RDWR, 0777);
+	ftruncate(qshm, 2*sizeof(int));
+	qlenshm = (int *)mmap(NULL, 2*sizeof(int), 
+		PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED, qshm, 0);
+	//perror(NULL);
 	qlenshm[0]=qlen;
 	ppid = getpid();
-	semphr = sem_open(getenv("HOME"), O_CREAT, 0777, 0);
+	semphr = sem_open("/semaphore", O_CREAT, 0777, 0);
 	//perror("Sem");
-	shm = shm_open(getenv("HOME"), O_RDWR | O_CREAT, 0777);
+	shm = shm_open("/shm", O_CREAT|O_RDWR, 0777);
+	ftruncate(shm, qlen*sizeof(struct qnode));
 	//perror("Shm");
 	queue=(struct qnode *)mmap(NULL, qlen*sizeof(struct qnode), 
-		PROT_READ | PROT_EXEC | PROT_WRITE, MAP_SHARED, shm, 0);
+		PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, shm, 0);
 	//perror("Q");
+	init_queue(queue, qlen);
 	signal(SIGINT, finish);
 	struct qnode res;
 	struct timespec tmspec;
@@ -46,7 +51,7 @@ int main(int argc, char *argv[]){
 		sem_wait(semphr);
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda zostaje obudzony\n", (int)tmspec.tv_sec);
-		res=get_value(queue);
+		res=get_value(queue, qlen);
 		clock_gettime(CLOCK_REALTIME, &tmspec);
 		printf("%d:Golibroda goli klienta %d\n", (int)tmspec.tv_sec, res.pid);
 		clientsem = sem_open(res.semnum, 0);
