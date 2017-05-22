@@ -12,8 +12,9 @@ char *filename;
 int recordcount;
 char *targetword;
 //int currentrec;
-int file;
+FILE* file;
 pthread_t *threadid;
+//pthread_mutex_t mutex = PTHREAD_MUTEX_INTIALIZER;
 
 /*
 int containsword(char* str, char* word){
@@ -26,8 +27,8 @@ int containsword(char* str, char* word){
 */
 
 void sighandler(int signo){
-	close(file);
-	pthread_exit(signo);
+	fclose(file);
+	pthread_exit((void*)signo);
 }
 
 void* threadfun(void* args){
@@ -35,19 +36,25 @@ void* threadfun(void* args){
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	char buf[1024];
 	char num[8];
-	char str[1014];
+	//char *num=calloc(8, sizeof(char));
+	char str[1024];
+	int found=0;
 	for(int i=0; i<recordcount; i++){
-		read(file, &buf, 1024);
+		fread(buf, sizeof(char), 1024, file);
 		strncpy(num, buf, 8);
-		strncpy(str, buf+9, 1014);
+		strncpy(str, buf, 1024);
+		//num=strtok(buf, "-");
 		if(strstr(str, targetword)!=NULL){
 			printf("Word %s found by thread %ld in %s record\n", targetword, (long)(pthread_self()), num);
+			found=1;
 			break;
 		}
 	}
-	for(int i=0; i<threadnum; i++){
-		if(threadid[i]!=0 && threadid[i]!=pthread_self())
-			pthread_cancel(threadid[i]);
+	if(found){
+		for(int i=0; i<threadnum; i++){
+			if(threadid[i]!=0 && threadid[i]!=pthread_self())
+				pthread_cancel(threadid[i]);
+		}
 	}
 	return NULL;
 }
@@ -61,7 +68,7 @@ int main(int argc, char* argv[]){
 	targetword=calloc(strlen(argv[4])+1, sizeof(char));
 	strcpy(targetword, argv[4]);
 	//currentrec=0;
-	file = open(filename, O_RDONLY);
+	file = fopen(filename, "r");
 	threadid=calloc(threadnum, sizeof(pthread_t));
 	signal(SIGINT, sighandler);
 	for(int i=0; i<threadnum; i++){
@@ -73,6 +80,6 @@ int main(int argc, char* argv[]){
 	for(int i=0; i<threadnum; i++){
 		pthread_join(threadid[i], NULL);
 	}
-	close(file);
+	fclose(file);
 	return 0;
 }
