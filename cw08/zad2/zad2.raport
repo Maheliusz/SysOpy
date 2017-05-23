@@ -1,0 +1,15 @@
+OS: Debian GNU/Linux 8 (jessie) 64-bitowy
+Kernel: 3.16.0-4-amd64
+Procesor: Intel® Core™ i5-5200U CPU @ 2.20GHz 
+Kompilator: gcc (Debian 4.9.2-10) 4.9.2
+Uwagi: maszyna wirtualna uruchamiana na Oracle VM VirtualBox
+
+Zadanie a)
+1. sygnały działają normalnie, działają na wszystkie wątki
+2. sygnały działają na wątki, nie działają na główny proces
+3. wątki reagują na sygnał wysłany do procesu
+4. wątek reaguje na SIGKILL, SIGINT, SIGUSR1, SIGTERM
+5. analogicznie jak w punkcie 4.
+
+Zadanie b)
+Wątek wydaje się nie generować sygnału ani go przechwytywać.
