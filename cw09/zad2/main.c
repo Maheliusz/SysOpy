@@ -40,6 +40,7 @@ void* writer(void* arg){
 		if(qplace==-1)continue;
 		pthread_mutex_lock(&mutex);
 		pthread_cond_wait(&conds[qplace], &mutex);
+		taken[i]=1;
 		//if(errno==EAGAIN) continue;
 		cnt=rand()%32;
 		for(int i=0; i<cnt; i++){
@@ -77,6 +78,7 @@ void* reader(void* arg){
 		if(qplace==-1)continue;
 		pthread_mutex_lock(&mutex);
 		pthread_cond_wait(&conds[qplace], &mutex);
+		taken[i]=1;
 		for(int i=0; i<256; i++){
 			if(table[i]%div){
 				cntr++;
@@ -84,7 +86,7 @@ void* reader(void* arg){
 			}		
 		}
 		printf("Czytelnik %ld: znaleziono %d liczb podzielnych przez %d\n", pthread_self(), cntr, div);
-		pthread_cond_broadcast(&conds[qplace]);
+		pthread_cond_signal(&conds[qplace]);
 		taken[qplace]=0;
 		pthread_mutex_unlock(&mutex);
 		//sem_post(block);
@@ -132,8 +134,9 @@ int main(int argc, char* argv[]){
 	signal(SIGINT, sighandler);
 	for(int rnr=0; 1; rnr=(rnr+1)%(writernum+readernum)){
 		if(taken[rnr]!=0){
-			pthread_cond_broadcast(&conds[rnr]);
-			sleep(1);
+			pthread_cond_signal(&conds[rnr]);
+			//sleep(1);
+			usleep(75000);
 		}
 	}
 	/*
