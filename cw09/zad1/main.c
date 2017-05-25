@@ -33,25 +33,28 @@ void* writer(void* arg){
 			if(descriptive) printf("Pisarz %ld - index: %d, wartosc: %d\n", pthread_self(), index, value);
 		}
 		printf("Pisarz %ld: zmodyfikowano tablice\n", pthread_self());
+		usleep(750000);
 		sem_post(block);
 	}
 	return NULL;
 }
 
-void* reader(int* arg){
+void* reader(void* arg){
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	int cntr;
+	int div= *((int *)arg);
 	while(1){
 		cntr=0;
 		sem_wait(block);
 		for(int i=0; i<256; i++){
-			if(table[i]%arg[0]){
+			if(table[i]%div){
 				cntr++;
 				if(descriptive) printf("Czytelnik %ld: index: %d, wartosc: %d\n", pthread_self(), i, table[i]);
 			}		
 		}
-		printf("Czytelnik %ld: znaleziono %d liczb podzielnych przez %d\n", pthread_self(), cntr, arg[0]);
+		printf("Czytelnik %ld: znaleziono %d liczb podzielnych przez %d\n", pthread_self(), cntr, div);
+		usleep(750000);
 		sem_post(block);
 	}
 	return NULL;
@@ -80,7 +83,7 @@ int main(int argc, char* argv[]){
 	}
 	int div = rand()%256;
 	for(int i=0; i<readernum; i++){
-		pthread_create(&readers[i], NULL, reader, (int*)&div);
+		pthread_create(&readers[i], NULL, reader, (void*)&div);
 	}
 	signal(SIGINT, sighandler);
 	for(int i=0; i<writernum; i++){
