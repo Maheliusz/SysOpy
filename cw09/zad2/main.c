@@ -54,6 +54,7 @@ void* writer(void* arg){
 		taken[qplace]=0;
 		pthread_mutex_unlock(&mutex);
 		//sem_post(block);
+
 	}
 	return NULL;
 }
