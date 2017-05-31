@@ -1,6 +1,4 @@
 #define _GNU_SOURCE
-#define _BSD_SOURCE
-#define _DEFAULT_SOURCE
 #define UNIX_MAX_PATH 108
 
 #include<stdio.h>
@@ -33,30 +31,30 @@ struct sockaddr_in netaddr;
 struct sockaddr_un localaddr;
 struct pollfd monitor[MAXCLIENTS+2];
 pthread_t funcs[3];
-char *path;
+char path[UNIX_MAX_PATH];
 int clients[MAXCLIENTS];
 char clnames[MAXCLIENTS][MAXNAMELEN];
 int cntr;
 int pinged[MAXCLIENTS];
 
 int getrandomclient(){
-	int cntr=0;
+	int c=0;
 	int tmp=0;
 	for(int i=0; i<MAXCLIENTS; i++){
-		if(monitor[i].fd!=-1) cntr++;
+		if(monitor[i].fd!=-1) c++;
 	}
-	if(cntr==0) return -1;
-	else if(cntr==1){
+	if(c==0) return -1;
+	else if(c==1){
 		for(int i=0; i<MAXCLIENTS; i++){
 			if(monitor[i].fd!=-1) return i;
 		}
 	}
 	else{
-		tmp=rand()%cntr;
-		cntr=0;
+		tmp=rand()%c;
+		c=0;
 		for(int i=0; i<MAXCLIENTS; i++){
 			if(monitor[i].fd!=-1){
-				if(tmp==cntr++) return i;
+				if(tmp==c++) return i;
 			}
 		}
 	}
@@ -83,7 +81,6 @@ void* handlecommands(void* arg){
 	char symbol;
 	float num1;
 	float num2;
-	int ctr=0;
 	int client=-1;
 	struct message msg;
 	while(1){
@@ -94,7 +91,7 @@ void* handlecommands(void* arg){
 		if(client==-1) printf("No clients connected\n");
 		else{
 			msg.type=MSG;
-			msg.cntr=ctr++;
+			msg.cntr=cntr++;
 			msg.num1=num1;
 			msg.num2=num2;
 			msg.sign=symbol;
@@ -106,14 +103,13 @@ void* handlecommands(void* arg){
 void* watch(void* arg){
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	monitor[LOCAL].fd=local;
-	monitor[NET].fd=net;
 	for(int i=0; i<MAXCLIENTS; i++) monitor[i].fd=-1;
 	for(int i=0; i<MAXCLIENTS+2; i++) monitor[i].events = POLLIN | POLLOUT | POLLRDHUP;
-	listen(local, MAXCLIENTS);
-	listen(net, MAXCLIENTS);
+	listen(monitor[LOCAL].fd, MAXCLIENTS);
+	listen(monitor[NET].fd, MAXCLIENTS);
 	int res;
-	struct message buf;
+	struct message msg;
+	char buf[1024];
 	while(1){
 		res=poll(monitor, MAXCLIENTS+2, 60000);
 		if(res==0) break;
@@ -122,34 +118,43 @@ void* watch(void* arg){
 				if(monitor[i].revents!=0){
 					int placed=0;
 					int handle = accept(monitor[i].fd, NULL, NULL);
-					read(monitor[i].fd, (void*)&buf, sizeof(struct message));
+					read(monitor[i].fd, buf, sizeof(struct message));
+					msg=*(struct message*)buf;
 					for(int j=0; j<MAXCLIENTS; j++){
-						if(strcmp(clnames[j], buf.name)!=0 && monitor[j].fd==-1){
+						if(strcmp(clnames[j], msg.name)!=0 && monitor[j].fd==-1){
 							placed=1;
 							monitor[j].fd=handle;
-							strcpy(clnames[j], buf.name);
+							strcpy(clnames[j], msg.name);
 							break;
 						}
 					}
 					if(placed==0){
+						msg.type=DENIAL;
+						write(monitor[i].fd, (void*)&msg, sizeof(struct message));
 						shutdown(handle, SHUT_RDWR);
 						close(handle);
 					}
 				}
 			}
 			else{
-				if((monitor[i].revents & POLLRDHUP) != 0){
+				if((monitor[i].revents & (POLLRDHUP|POLLHUP)) != 0){
 					shutdown(monitor[i].fd, SHUT_RDWR);
 					close(monitor[i].fd);
 					monitor[i].fd=-1;
 					strcpy(clnames[i], "");
 				}
 				else if((monitor[i].revents & POLLIN) != 0){
-					read(monitor[i].fd, (void*)&buf, sizeof(struct message));
-					if(buf.type==PING) pinged[i]=1;
-					else if(buf.type==ANSWER){
-						//TODO
-						printf("Odpowiedz na dzialanie nr %d: %f\n", buf.cntr, buf.answer);
+					read(monitor[i].fd, buf, sizeof(struct message));
+					msg=*(struct message*)buf;
+					if(msg.type==PING) pinged[i]=1;
+					else if(msg.type==ANSWER){
+						printf("Odpowiedz na dzialanie nr %d: %f\n", msg.cntr, msg.answer);
+					}
+					else if(msg.type==EXIT){
+						shutdown(monitor[i].fd, SHUT_RDWR);
+						close(monitor[i].fd);
+						monitor[i].fd=-1;
+						strcpy(clnames[i], "");
 					}
 				}
 			}
@@ -183,7 +188,7 @@ void* ping(void* arg){
 
 int main(int argc, char* argv[]){
 	if(argc<3) return 1;
-	path=calloc(108, sizeof(char));
+	//path=calloc(108, sizeof(char));
 	//path = getcwd(path, 108);
 	port=atoi(argv[1]);
 	strcpy(path, argv[2]);
@@ -192,34 +197,33 @@ int main(int argc, char* argv[]){
 	for(int i=0; i<MAXCLIENTS; i++){
 		strcpy(clnames[i], "");
 	}
-	if((local=socket(AF_UNIX, SOCK_STREAM, 0))<0){
+	if((monitor[LOCAL].fd=socket(AF_UNIX, SOCK_STREAM, 0))<0){
 		printf("Error in creating local socket\n");
 		exit(1);
 	}
-	if((net=socket(AF_INET, SOCK_STREAM, 0))<0){
+	if((monitor[NET].fd=socket(AF_INET, SOCK_STREAM, 0))<0){
 		printf("Error in creating local socket\n");
 		exit(1);
 	}
-	//memset((char*)&netaddr, '\0', sizeof(netaddr));
 	netaddr.sin_addr.s_addr=htonl(INADDR_ANY);
 	netaddr.sin_port=htons(port);
 	netaddr.sin_family=AF_INET;
-	//memset((char*)&localaddr, '\0', sizeof(localaddr));
 	localaddr.sun_family=AF_UNIX;
 	strcpy(localaddr.sun_path, path);
-	if(bind(local, (struct sockaddr*)&localaddr, sizeof(localaddr))<0){
+	if(bind(monitor[LOCAL].fd, (struct sockaddr*)&localaddr, sizeof(struct sockaddr))<0){
 		perror("Local bind");
 		sighandler(errno);
 	}
-	if(bind(net, (struct sockaddr*)&netaddr, sizeof(netaddr))<0){
+	if(bind(monitor[NET].fd, (struct sockaddr*)&netaddr, sizeof(struct sockaddr))<0){
 		perror("Net bind");
 		sighandler(errno);
 	}
 	pthread_create(&funcs[0], NULL, handlecommands, NULL);
 	pthread_create(&funcs[1], NULL, watch, NULL);
 	pthread_create(&funcs[2], NULL, ping, NULL);
-	
-	
+	for(int i=0; i<3; i++){
+		pthread_join(funcs[i], NULL);
+	}	
 	unlink(path);
 	return 0;
 }

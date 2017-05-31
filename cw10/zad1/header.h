@@ -1,6 +1,4 @@
 #define _GNU_SOURCE
-#define _BSD_SOURCE
-#define _DEFAULT_SOURCE
 #define UNIX_MAX_PATH 108
 #define MAXCLIENTS 16
 #define MAXNAMELEN 16
@@ -23,29 +21,20 @@
 #include<poll.h>
 #include<pthread.h>
 
-
-//ponizsze wartosci nie maja znaczenia
-//static const int NET = 12;
-//static const int LOCAL = 13;
-static const int PING = 20;
-static const int MSG = 21;
-static const int ANSWER = 22;
-static const int HANDSHAKE = 23;
-
-/*struct data{
-	int cntr;
-	int num1;
-	int num2;
-	char sign;
-};*/
+enum type{
+	PING = 20, MSG, ANSWER, HANDSHAKE, EXIT, DENIAL
+};
+enum op{
+	ADD = 30, SUB, MUL, DIV
+};
 
 struct message{
-	int type;
+	enum type type;
 	float answer;
 	//struct data stuff;
 	int cntr;
-	int num1;
-	int num2;
+	float num1;
+	float num2;
 	char sign;
 	char name[MAXNAMELEN];	
 };
