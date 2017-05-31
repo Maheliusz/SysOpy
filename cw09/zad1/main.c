@@ -81,8 +81,9 @@ int main(int argc, char* argv[]){
 	for(int i=0; i<writernum; i++){
 		pthread_create(&writers[i], NULL, writer, NULL);
 	}
-	int div = rand()%256;
+	int div;
 	for(int i=0; i<readernum; i++){
+		div = rand()%256;
 		pthread_create(&readers[i], NULL, reader, (void*)&div);
 	}
 	signal(SIGINT, sighandler);
