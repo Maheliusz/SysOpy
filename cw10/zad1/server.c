@@ -77,23 +77,29 @@ void sighandler(int signo){
 void* handlecommands(void* arg){
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	char buf[64];
+	char buf[1000];
 	char symbol;
-	float num1;
-	float num2;
+	//char* tmp;
+	char num1[25];
+	char num2[25];
+	int i, j;
 	int client=-1;
 	struct message msg;
 	while(1){
-		while(fgets(buf, 64, stdin)!=NULL);
-		if(sscanf(buf, "%f %c %f\n", &num1, &symbol, &num2)<=0) continue;
+		fgets(buf, 1000, stdin);
+		for(i=0; i<strlen(buf)&&data[i]>='0'&&data[i]<='9'; i++)num1[i]=buf[i];
+		num[i-1]='\0';
+		symbol=buf[i++];
+		for(j=i; j<strlen(buf)&&data[j]>='0'&&data[j]<='9'; j++)num2[j-i-1]=buf[j];
+		num2[j-i-1]='\0';
 		if((symbol=='+'||symbol=='-'||symbol=='*'||symbol=='/')!=1) continue;
 		client=getrandomclient();
 		if(client==-1) printf("No clients connected\n");
 		else{
 			msg.type=MSG;
 			msg.cntr=cntr++;
-			msg.num1=num1;
-			msg.num2=num2;
+			msg.num1=atoi(num1);
+			msg.num2=atoi(num2);
 			msg.sign=symbol;
 			write(monitor[client].fd, (void*)&msg, sizeof(msg));
 		}
@@ -103,25 +109,33 @@ void* handlecommands(void* arg){
 void* watch(void* arg){
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	for(int i=0; i<MAXCLIENTS; i++) monitor[i].fd=-1;
-	for(int i=0; i<MAXCLIENTS+2; i++) monitor[i].events = POLLIN | POLLOUT | POLLRDHUP;
+	//for(int i=0; i<MAXCLIENTS; i++) monitor[i].fd=-1;
+	//for(int i=0; i<MAXCLIENTS+2; i++) monitor[i].events = POLLIN | POLLOUT | POLLRDHUP;
 	listen(monitor[LOCAL].fd, MAXCLIENTS);
 	listen(monitor[NET].fd, MAXCLIENTS);
 	int res;
 	struct message msg;
 	char buf[1024];
 	while(1){
-		res=poll(monitor, MAXCLIENTS+2, 60000);
-		if(res==0) break;
+		for(int i=0; i<MAXCLIENTS; i++){
+			monitor[i].events=POLLIN;
+		}
+		res=poll(monitor, MAXCLIENTS+2, -1);
+		if(res==0) continue;
 		for(int i=0; i<MAXCLIENTS+2; i++){
 			if(i==LOCAL || i==NET){
 				if(monitor[i].revents!=0){
 					int placed=0;
+					int taken=0;
 					int handle = accept(monitor[i].fd, NULL, NULL);
 					read(monitor[i].fd, buf, sizeof(struct message));
 					msg=*(struct message*)buf;
 					for(int j=0; j<MAXCLIENTS; j++){
-						if(strcmp(clnames[j], msg.name)!=0 && monitor[j].fd==-1){
+						if(strcmp(clnames[j], msg.name)==0) taken=1;
+					}
+					for(int j=0; j<MAXCLIENTS; j++){
+						if(taken) break;
+						if(monitor[j].fd==-1){
 							placed=1;
 							monitor[j].fd=handle;
 							strcpy(clnames[j], msg.name);
@@ -142,19 +156,21 @@ void* watch(void* arg){
 					close(monitor[i].fd);
 					monitor[i].fd=-1;
 					strcpy(clnames[i], "");
+					pinged[i]=0;
 				}
 				else if((monitor[i].revents & POLLIN) != 0){
 					read(monitor[i].fd, buf, sizeof(struct message));
 					msg=*(struct message*)buf;
-					if(msg.type==PING) pinged[i]=1;
+					if(msg.type==PING) pinged[i]=0;
 					else if(msg.type==ANSWER){
-						printf("Odpowiedz na dzialanie nr %d: %f\n", msg.cntr, msg.answer);
+						printf("Odpowiedz na dzialanie nr %d: %d\n", msg.cntr, msg.answer);
 					}
 					else if(msg.type==EXIT){
 						shutdown(monitor[i].fd, SHUT_RDWR);
 						close(monitor[i].fd);
 						monitor[i].fd=-1;
 						strcpy(clnames[i], "");
+						pinged[i]=0;
 					}
 				}
 			}
@@ -171,10 +187,10 @@ void* ping(void* arg){
 	msg.type=PING;
 	while(1){
 		if(monitor[i].fd!=-1){
-			pinged[i]=0;
+			pinged[i]=1;
 			write(monitor[i].fd, (void*)&msg, sizeof(struct message));
 			sleep(1);
-			if(pinged[i]==0){
+			if(pinged[i]){
 				shutdown(monitor[i].fd, SHUT_RDWR);
 				close(monitor[i].fd);
 				monitor[i].fd=-1;
@@ -196,6 +212,9 @@ int main(int argc, char* argv[]){
 	cntr=0;
 	for(int i=0; i<MAXCLIENTS; i++){
 		strcpy(clnames[i], "");
+		monitor[i].fd=-1;
+		monitor[i].events = POLLRDHUP;
+		pinged[i]=0;
 	}
 	if((monitor[LOCAL].fd=socket(AF_UNIX, SOCK_STREAM, 0))<0){
 		printf("Error in creating local socket\n");
@@ -210,11 +229,11 @@ int main(int argc, char* argv[]){
 	netaddr.sin_family=AF_INET;
 	localaddr.sun_family=AF_UNIX;
 	strcpy(localaddr.sun_path, path);
-	if(bind(monitor[LOCAL].fd, (struct sockaddr*)&localaddr, sizeof(struct sockaddr))<0){
+	if(bind(monitor[LOCAL].fd, (struct sockaddr*)&localaddr, sizeof(struct sockaddr_un))<0){
 		perror("Local bind");
 		sighandler(errno);
 	}
-	if(bind(monitor[NET].fd, (struct sockaddr*)&netaddr, sizeof(struct sockaddr))<0){
+	if(bind(monitor[NET].fd, (struct sockaddr*)&netaddr, sizeof(struct sockaddr_in))<0){
 		perror("Net bind");
 		sighandler(errno);
 	}
