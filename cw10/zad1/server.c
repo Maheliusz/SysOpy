@@ -87,10 +87,10 @@ void* handlecommands(void* arg){
 	struct message msg;
 	while(1){
 		fgets(buf, 1000, stdin);
-		for(i=0; i<strlen(buf)&&data[i]>='0'&&data[i]<='9'; i++)num1[i]=buf[i];
-		num[i-1]='\0';
+		for(i=0; i<strlen(buf)&&buf[i]>='0'&&buf[i]<='9'; i++)num1[i]=buf[i];
+		num1[i-1]='\0';
 		symbol=buf[i++];
-		for(j=i; j<strlen(buf)&&data[j]>='0'&&data[j]<='9'; j++)num2[j-i-1]=buf[j];
+		for(j=i; j<strlen(buf)&&buf[j]>='0'&&buf[j]<='9'; j++)num2[j-i-1]=buf[j];
 		num2[j-i-1]='\0';
 		if((symbol=='+'||symbol=='-'||symbol=='*'||symbol=='/')!=1) continue;
 		client=getrandomclient();
@@ -213,7 +213,7 @@ int main(int argc, char* argv[]){
 	for(int i=0; i<MAXCLIENTS; i++){
 		strcpy(clnames[i], "");
 		monitor[i].fd=-1;
-		monitor[i].events = POLLRDHUP;
+		monitor[i].events = POLLRDHUP | POLLHUP;
 		pinged[i]=0;
 	}
 	if((monitor[LOCAL].fd=socket(AF_UNIX, SOCK_STREAM, 0))<0){
@@ -237,8 +237,8 @@ int main(int argc, char* argv[]){
 		perror("Net bind");
 		sighandler(errno);
 	}
-	pthread_create(&funcs[0], NULL, handlecommands, NULL);
-	pthread_create(&funcs[1], NULL, watch, NULL);
+	pthread_create(&funcs[0], NULL, watch, NULL);
+	pthread_create(&funcs[1], NULL, handlecommands, NULL);
 	pthread_create(&funcs[2], NULL, ping, NULL);
 	for(int i=0; i<3; i++){
 		pthread_join(funcs[i], NULL);

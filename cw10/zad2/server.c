@@ -19,17 +19,19 @@
 #include<pthread.h>
 #include"header.h"
 
-const int LOCAL = MAXCLIENTS-2;
-const int NET = MAXCLIENTS-1;
+const int LOCAL = 0;
+const int NET = 1;
 
 int port;
 int local;
 int net;
-int localclsck;
-int netclsck;
+int localsck;
+int netsck;
 struct sockaddr_in netaddr;
 struct sockaddr_un localaddr;
-struct pollfd monitor[MAXCLIENTS+2];
+struct pollfd monitor[2];
+struct sockaddr clientaddr[MAXCLIENTS];
+int connection[MAXCLIENTS];
 pthread_t funcs[3];
 char path[UNIX_MAX_PATH];
 int clients[MAXCLIENTS];
@@ -41,19 +43,19 @@ int getrandomclient(){
 	int c=0;
 	int tmp=0;
 	for(int i=0; i<MAXCLIENTS; i++){
-		if(monitor[i].fd!=-1) c++;
+		if(strcmp(clnames[i], "")!=0) c++;
 	}
 	if(c==0) return -1;
 	else if(c==1){
 		for(int i=0; i<MAXCLIENTS; i++){
-			if(monitor[i].fd!=-1) return i;
+			if(strcmp(clnames[i], "")!=0) return i;
 		}
 	}
 	else{
 		tmp=rand()%c;
 		c=0;
 		for(int i=0; i<MAXCLIENTS; i++){
-			if(monitor[i].fd!=-1){
+			if(strcmp(clnames[i], "")!=0){
 				if(tmp==c++) return i;
 			}
 		}
@@ -63,13 +65,9 @@ int getrandomclient(){
 
 void sighandler(int signo){
 	for(int i=0; i<3; i++) pthread_cancel(funcs[i]);
-	for(int i=0; i<MAXCLIENTS+2; i++){
-		if(monitor[i].fd!=-1){
-			shutdown(monitor[i].fd, SHUT_RDWR);
-			close(monitor[i].fd);
-		}
-	}
 	unlink(path);
+	close(monitor[NET].fd);
+	close(monitor[LOCAL].fd);
 	exit(signo);
 }
 
@@ -80,91 +78,97 @@ void* handlecommands(void* arg){
 	char buf[64];
 	char symbol;
 	//char* tmp;
-	int num1;
-	int num2;
+	char num1[25];
+	char num2[25];
+	int i, j;
 	int client=-1;
 	struct message msg;
 	while(1){
-		while(fgets(buf, 64, stdin)!=NULL);
-		if(sscanf(buf, "%d %c %d\n", &num1, &symbol, &num2)<=0) continue;
-		/*tmp = strtok(buf, " \n");
-		num1 = atoi(tmp);
-		tmp = strtok(NULL, " \n");
-		symbol = tmp[0];
-		tmp = strtok(NULL, " \n");
-		num2 = atoi(tmp);*/
+		fgets(buf, 64, stdin);
+		for(i=0; i<strlen(buf)&&buf[i]>='0'&&buf[i]<='9'; i++)num1[i]=buf[i];
+		num1[i-1]='\0';
+		symbol=buf[i++];
+		for(j=i; j<strlen(buf)&&buf[j]>='0'&&buf[j]<='9'; j++)num2[j-i-1]=buf[j];
+		num2[j-i-1]='\0';
 		if((symbol=='+'||symbol=='-'||symbol=='*'||symbol=='/')!=1) continue;
 		client=getrandomclient();
 		if(client==-1) printf("No clients connected\n");
 		else{
 			msg.type=MSG;
 			msg.cntr=cntr++;
-			msg.num1=num1;
-			msg.num2=num2;
+			msg.num1=atoi(num1);
+			msg.num2=atoi(num2);
 			msg.sign=symbol;
-			write(monitor[client].fd, (void*)&msg, sizeof(msg));
+			//TODO
+			if(connection[client]==NET)	sendto(monitor[NET].fd, (void*)&msg, sizeof(msg), 0, &clientaddr[i], sizeof(struct sockaddr));
+			else sendto(monitor[LOCAL].fd, (void*)&msg, sizeof(msg), 0, &clientaddr[i], sizeof(struct sockaddr));
 		}
 	}
 	return NULL;
 }
+void handlemsg(struct message msg, struct sockaddr client, int sck){
+	if(msg.type==HANDSHAKE){
+		int taken=0;
+		int placed=0;
+		for(int i=0; i<MAXCLIENTS; i++){
+			if(strcmp(msg.name, clnames[i])==0){ 
+				taken=1;
+				break;
+			}
+		}
+		for(int i=0; i<MAXCLIENTS; i++){
+			if(taken) break;
+			if(strcmp(clnames[i], "")==0){
+				placed=1;
+				memcpy((void*)&clients[i], (void*)&client, sizeof(struct sockaddr));
+				strcpy(clnames[i], msg.name);
+				connection[i]=NET;
+			}
+		}
+		if(placed==0){
+			msg.type=DENIAL;
+			sendto(sck, (void*)&msg, sizeof(struct message), 0, &client, sizeof(struct sockaddr));
+		}
+	}
+	else if(msg.type==ANSWER){
+		printf("Odpowiedz na dzialanie nr %d: %d\n", msg.cntr, msg.answer);
+	}
+	else if(msg.type==PING){
+		for(int i=0; i<MAXCLIENTS; i++){
+			if(strcmp(msg.name, clnames[i])==0){
+				pinged[i]=0;
+			}
+		}
+	}
+	else if(msg.type==EXIT){
+		for(int i=0; i<MAXCLIENTS; i++){
+			if(strcmp(msg.name, clnames[i])==0){
+				pinged[i]=0;
+				strcpy(clnames[i], "");
+				connection[i]=-1;
+			}
+		}
+	}
+}
 void* watch(void* arg){
 	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
-	for(int i=0; i<MAXCLIENTS; i++) monitor[i].fd=-1;
-	for(int i=0; i<MAXCLIENTS+2; i++) monitor[i].events = POLLIN | POLLOUT | POLLRDHUP;
-	listen(monitor[LOCAL].fd, MAXCLIENTS);
-	listen(monitor[NET].fd, MAXCLIENTS);
-	int res;
 	struct message msg;
 	char buf[1024];
+	struct sockaddr client;
 	while(1){
-		res=poll(monitor, MAXCLIENTS+2, -1);
-		if(res==0) continue;
-		for(int i=0; i<MAXCLIENTS+2; i++){
-			if(i==LOCAL || i==NET){
-				if(monitor[i].revents!=0){
-					int placed=0;
-					int handle = accept(monitor[i].fd, NULL, NULL);
-					read(monitor[i].fd, buf, sizeof(struct message));
-					msg=*(struct message*)buf;
-					for(int j=0; j<MAXCLIENTS; j++){
-						if(strcmp(clnames[j], msg.name)!=0 && monitor[j].fd==-1){
-							placed=1;
-							monitor[j].fd=handle;
-							strcpy(clnames[j], msg.name);
-							break;
-						}
-					}
-					if(placed==0){
-						msg.type=DENIAL;
-						write(monitor[i].fd, (void*)&msg, sizeof(struct message));
-						shutdown(handle, SHUT_RDWR);
-						close(handle);
-					}
-				}
-			}
-			else{
-				if((monitor[i].revents & (POLLRDHUP|POLLHUP)) != 0){
-					shutdown(monitor[i].fd, SHUT_RDWR);
-					close(monitor[i].fd);
-					monitor[i].fd=-1;
-					strcpy(clnames[i], "");
-				}
-				else if((monitor[i].revents & POLLIN) != 0){
-					read(monitor[i].fd, buf, sizeof(struct message));
-					msg=*(struct message*)buf;
-					if(msg.type==PING) pinged[i]=1;
-					else if(msg.type==ANSWER){
-						printf("Odpowiedz na dzialanie nr %d: %d\n", msg.cntr, msg.answer);
-					}
-					else if(msg.type==EXIT){
-						shutdown(monitor[i].fd, SHUT_RDWR);
-						close(monitor[i].fd);
-						monitor[i].fd=-1;
-						strcpy(clnames[i], "");
-					}
-				}
-			}
+		//TODO
+		monitor[LOCAL].events=POLLIN|POLLOUT;
+		monitor[NET].events=POLLIN|POLLOUT;
+		poll(monitor, 2, -1);
+		if(monitor[LOCAL].revents!=0){
+			recvfrom(monitor[LOCAL].fd, (void*)&buf, sizeof(struct message), 0, &client, NULL);
+			msg = *(struct message*)buf;
+			handlemsg(msg, client, monitor[LOCAL].fd);
+		} else if(monitor[LOCAL].revents!=0){
+			recvfrom(monitor[NET].fd, (void*)&buf, sizeof(struct message), 0, &client, NULL);
+			msg = *(struct message*)buf;
+			handlemsg(msg, client, monitor[NET].fd);
 		}
 	}
 	return NULL;
@@ -177,15 +181,14 @@ void* ping(void* arg){
 	struct message msg;
 	msg.type=PING;
 	while(1){
-		if(monitor[i].fd!=-1){
-			pinged[i]=0;
-			write(monitor[i].fd, (void*)&msg, sizeof(struct message));
+		if(strcmp(clnames[i], "")!=0){
+			pinged[i]=1;
+			if(connection[i]==NET) sendto(netsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
+			else sendto(localsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
 			sleep(1);
-			if(pinged[i]==0){
-				shutdown(monitor[i].fd, SHUT_RDWR);
-				close(monitor[i].fd);
-				monitor[i].fd=-1;
+			if(pinged[i]){
 				strcpy(clnames[i], "");
+				connection[i]=-1;
 			}
 		}
 		i=(i+1)%MAXCLIENTS;
@@ -203,12 +206,13 @@ int main(int argc, char* argv[]){
 	cntr=0;
 	for(int i=0; i<MAXCLIENTS; i++){
 		strcpy(clnames[i], "");
+		connection[i]=-1;
 	}
-	if((monitor[LOCAL].fd=socket(AF_UNIX, SOCK_STREAM, 0))<0){
+	if((monitor[LOCAL].fd=socket(AF_UNIX, SOCK_DGRAM, 0))<0){
 		printf("Error in creating local socket\n");
 		exit(1);
 	}
-	if((monitor[NET].fd=socket(AF_INET, SOCK_STREAM, 0))<0){
+	if((monitor[NET].fd=socket(AF_INET, SOCK_DGRAM, 0))<0){
 		printf("Error in creating local socket\n");
 		exit(1);
 	}
@@ -217,11 +221,11 @@ int main(int argc, char* argv[]){
 	netaddr.sin_family=AF_INET;
 	localaddr.sun_family=AF_UNIX;
 	strcpy(localaddr.sun_path, path);
-	if(bind(monitor[LOCAL].fd, (struct sockaddr*)&localaddr, sizeof(struct sockaddr))<0){
+	if(bind(monitor[LOCAL].fd, (struct sockaddr*)&localaddr, sizeof(struct sockaddr_un))<0){
 		perror("Local bind");
 		sighandler(errno);
 	}
-	if(bind(monitor[NET].fd, (struct sockaddr*)&netaddr, sizeof(struct sockaddr))<0){
+	if(bind(monitor[NET].fd, (struct sockaddr*)&netaddr, sizeof(struct sockaddr_in))<0){
 		perror("Net bind");
 		sighandler(errno);
 	}
