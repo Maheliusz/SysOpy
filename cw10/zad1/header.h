@@ -30,11 +30,11 @@ enum op{
 
 struct message{
 	enum type type;
-	float answer;
+	int answer;
 	//struct data stuff;
 	int cntr;
-	float num1;
-	float num2;
+	int num1;
+	int num2;
 	char sign;
 	char name[MAXNAMELEN];	
 };

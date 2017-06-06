@@ -33,7 +33,7 @@ void sighandler(int signo){
 	msg.type=EXIT;
 	write(sck, (void*)&msg, sizeof(struct message));
 	shutdown(sck, SHUT_RDWR);
-	close(sck);
+	//close(sck);
 	exit(signo);
 }
 
@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 	if(strcmp(argv[2], "net")==0) type = NET;
 	else if (strcmp(argv[2], "local")==0) type = LOCAL;
 	else return 1;
-	if(type==LOCAL && strlen(argv[3])>108) return 1;
+	if(type==LOCAL && strlen(argv[3])>UNIX_MAX_PATH) return 1;
 	host=calloc(strlen(argv[3])+1, sizeof(char));
 	strcpy(host, argv[3]);
 	if(type==NET) port=atoi(argv[4]);
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]){
 		naddr.sin_family=AF_INET;
 		naddr.sin_port=htons(port);
 		inet_pton(AF_INET, host, &(naddr.sin_addr));
-		if((connect(sck, (struct sockaddr*)&naddr, sizeof(struct sockaddr)))!=0){
+		if((connect(sck, (struct sockaddr*)&naddr, sizeof(struct sockaddr_in)))!=0){
 			perror("Connection");
 			return 1;
 		}
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
 		laddr.sun_family=AF_UNIX;
 		printf("%s\n", host);
 		strcpy(laddr.sun_path, host);
-		if((connect(sck, (struct sockaddr*)&laddr, sizeof(struct sockaddr)))!=0){
+		if((connect(sck, (struct sockaddr*)&laddr, sizeof(struct sockaddr_un)))!=0){
 			perror("Connection");
 			return 1;
 		}
@@ -99,18 +99,15 @@ int main(int argc, char* argv[]){
 		else if(msg.type==MSG){
 			msg.type=ANSWER;
 			if (msg.sign=='+'){
-				printf("Dzialanie %d: %f\n", msg.cntr, msg.num1+msg.num2);
 				msg.answer = msg.num1+msg.num2;
 			}else if (msg.sign=='-'){
-				printf("Dzialanie %d: %f\n", msg.cntr, msg.num1-msg.num2);
 				msg.answer = msg.num1-msg.num2;
 			}else if (msg.sign=='*'){
-				printf("Dzialanie %d: %f\n", msg.cntr, msg.num1*msg.num2);
 				msg.answer = msg.num1*msg.num2;
 			}else if (msg.sign=='/'){
-				printf("Dzialanie %d: %f\n", msg.cntr, msg.num1/msg.num2);
 				msg.answer = msg.num1/msg.num2;
 			}
+			printf("Dzialanie %d: %d\n", msg.cntr, msg.answer);
 			write(sck, (void*)&msg, sizeof(struct message));
 		}
 		else if(msg.type==DENIAL){
