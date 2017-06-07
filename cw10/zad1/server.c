@@ -85,6 +85,7 @@ void* handlecommands(void* arg){
 	int i, j;
 	int client=-1;
 	struct message msg;
+	int fd=-1;
 	while(1){
 		fgets(buf, 1000, stdin);
 		for(i=0; i<strlen(buf)&&buf[i]>='0'&&buf[i]<='9'; i++)num1[i]=buf[i];
@@ -96,12 +97,13 @@ void* handlecommands(void* arg){
 		client=getrandomclient();
 		if(client==-1) printf("No clients connected\n");
 		else{
+			fd=monitor[client].fd;
 			msg.type=MSG;
 			msg.cntr=cntr++;
 			msg.num1=atoi(num1);
 			msg.num2=atoi(num2);
 			msg.sign=symbol;
-			write(monitor[client].fd, (void*)&msg, sizeof(msg));
+			write(fd, (void*)&msg, sizeof(msg));
 		}
 	}
 	return NULL;
@@ -114,11 +116,13 @@ void* watch(void* arg){
 	listen(monitor[LOCAL].fd, MAXCLIENTS);
 	listen(monitor[NET].fd, MAXCLIENTS);
 	int res;
+	int fd;
 	struct message msg;
 	char buf[1024];
 	while(1){
+		fd=-1;
 		for(int i=0; i<MAXCLIENTS+2; i++){
-			monitor[i].events=POLLIN | POLLOUT | POLLRDHUP | POLLHUP;
+			monitor[i].events=POLLIN | POLLOUT | POLLRDHUP;
 		}
 		res=poll(monitor, MAXCLIENTS+2, -1);
 		if(res==0) continue;
@@ -127,9 +131,10 @@ void* watch(void* arg){
 				if(monitor[i].revents!=0){
 					int placed=0;
 					int taken=0;
-					int handle = accept(monitor[i].fd, NULL, NULL);
-					//read(monitor[i].fd, buf, sizeof(struct message));
-					read(handle, buf, sizeof(struct message));
+					fd=monitor[i].fd;
+					int handle = accept(fd, NULL, NULL);
+					read(fd, buf, sizeof(struct message));
+					//read(handle, buf, sizeof(struct message));
 					printf("Odebrano powitanie\n");
 					msg=*(struct message*)buf;
 					for(int j=0; j<MAXCLIENTS; j++){
@@ -146,30 +151,32 @@ void* watch(void* arg){
 					}
 					if(placed==0){
 						msg.type=DENIAL;
-						write(monitor[i].fd, (void*)&msg, sizeof(struct message));
+						write(fd, (void*)&msg, sizeof(struct message));
 						shutdown(handle, SHUT_RDWR);
 						close(handle);
 					}
 				}
 			}
 			else{
-				if((monitor[i].revents & (POLLRDHUP|POLLHUP)) != 0){
-					shutdown(monitor[i].fd, SHUT_RDWR);
-					close(monitor[i].fd);
+				if((monitor[i].revents & (POLLRDHUP & POLLHUP)) != 0){
+					fd=monitor[i].fd;
+					shutdown(fd, SHUT_RDWR);
+					close(fd);
 					monitor[i].fd=-1;
 					strcpy(clnames[i], "");
 					pinged[i]=0;
 				}
 				else if((monitor[i].revents & POLLIN) == POLLIN){
-					if(recv(monitor[i].fd, buf, sizeof(struct message), MSG_DONTWAIT)<=0) continue;
+					fd=monitor[i].fd;
+					if(recv(fd, buf, sizeof(struct message), MSG_DONTWAIT)<=0) continue;
 					msg=*(struct message*)buf;
 					if(msg.type==PING) pinged[i]=0;
 					else if(msg.type==ANSWER){
 						printf("Odpowiedz na dzialanie nr %d: %d\n", msg.cntr, msg.answer);
 					}
 					else if(msg.type==EXIT){
-						shutdown(monitor[i].fd, SHUT_RDWR);
-						close(monitor[i].fd);
+						shutdown(fd, SHUT_RDWR);
+						close(fd);
 						monitor[i].fd=-1;
 						strcpy(clnames[i], "");
 						pinged[i]=0;
@@ -177,7 +184,7 @@ void* watch(void* arg){
 					else if(msg.type==HANDSHAKE){
 						int placed=0;
 						int taken=0;
-						int handle = accept(monitor[i].fd, NULL, NULL);
+						int handle = accept(fd, NULL, NULL);
 						for(int j=0; j<MAXCLIENTS; j++){
 							if(strcmp(clnames[j], msg.name)==0) taken=1;
 						}
@@ -192,7 +199,7 @@ void* watch(void* arg){
 						}
 						if(placed==0){
 						msg.type=DENIAL;
-							write(monitor[i].fd, (void*)&msg, sizeof(struct message));
+							write(fd, (void*)&msg, sizeof(struct message));
 							shutdown(handle, SHUT_RDWR);
 							close(handle);
 						}
@@ -210,14 +217,16 @@ void* ping(void* arg){
 	int i=0;
 	struct message msg;
 	msg.type=PING;
+	int fd=-1;
 	while(1){
 		if(monitor[i].fd!=-1){
+			fd=monitor[i].fd;
 			pinged[i]=1;
-			write(monitor[i].fd, (void*)&msg, sizeof(struct message));
-			sleep(1);
+			write(fd, (void*)&msg, sizeof(struct message));
+			sleep(5);
 			if(pinged[i]){
-				shutdown(monitor[i].fd, SHUT_RDWR);
-				close(monitor[i].fd);
+				shutdown(fd, SHUT_RDWR);
+				close(fd);
 				monitor[i].fd=-1;
 				strcpy(clnames[i], "");
 			}
@@ -236,20 +245,23 @@ int main(int argc, char* argv[]){
 	strcpy(path, argv[2]);
 	signal(SIGINT, sighandler);
 	cntr=0;
+	int fd=0;
 	for(int i=0; i<MAXCLIENTS; i++){
 		strcpy(clnames[i], "");
 		monitor[i].fd=-1;
 		monitor[i].events = POLLRDHUP | POLLHUP;
 		pinged[i]=0;
 	}
-	if((monitor[LOCAL].fd=socket(AF_UNIX, SOCK_STREAM, 0))<0){
+	if((fd=socket(AF_UNIX, SOCK_STREAM, 0))<0){
 		printf("Error in creating local socket\n");
 		exit(1);
 	}
-	if((monitor[NET].fd=socket(AF_INET, SOCK_STREAM, 0))<0){
+	else monitor[LOCAL].fd=fd;
+	if((fd=socket(AF_INET, SOCK_STREAM, 0))<0){
 		printf("Error in creating local socket\n");
 		exit(1);
 	}
+	else monitor[NET].fd=fd;
 	netaddr.sin_addr.s_addr=htonl(INADDR_ANY);
 	netaddr.sin_port=htons(port);
 	netaddr.sin_family=AF_INET;
