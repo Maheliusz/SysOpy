@@ -31,9 +31,10 @@ int sck;
 void sighandler(int signo){
 	struct message msg;
 	msg.type=EXIT;
-	write(sck, (void*)&msg, sizeof(struct message));
+	send(sck, (void*)&msg, sizeof(struct message), 0);
 	shutdown(sck, SHUT_RDWR);
 	//close(sck);
+	//unlink(name);
 	exit(signo);
 }
 
@@ -64,6 +65,10 @@ int main(int argc, char* argv[]){
 			perror("Bind");
 			return 1;
 		}*/
+		if(connect(sck, (struct sockaddr*)&naddr, sizeof(struct sockaddr_un))<0){
+			perror("Connection");
+			return errno;
+		}
 	}
 	else {
 		if((sck=socket(AF_UNIX, SOCK_DGRAM, 0))<0){
@@ -72,29 +77,33 @@ int main(int argc, char* argv[]){
 		}
 		//struct sockaddr_un addr;
 		laddr.sun_family=AF_UNIX;
-		printf("%s\n", host);
-		strcpy(laddr.sun_path, name);
-		if((bind(sck, (struct sockaddr*)&laddr, sizeof(struct sockaddr_un)))!=0){
+		//printf("%s\n", host);
+		strcpy(laddr.sun_path, host);
+		if((bind(sck, (struct sockaddr*)&laddr, sizeof(sa_family_t)))!=0){
 			perror("Bind");
+			return 1;
+		}
+		if((connect(sck, (struct sockaddr*)&laddr, sizeof(struct sockaddr_un)))!=0){
+			perror("Connect");
 			return 1;
 		}
 	}
 	msg.type=HANDSHAKE;
 	strcpy(msg.name, name);
-	write(sck, (void*)&msg, sizeof(msg));
+	send(sck, (void*)&msg, sizeof(msg), 0);
 	signal(SIGINT, sighandler);
 	int size=0;
 	char buf[1024];
 	while(1){
 		msg.type=0;
-		size=read(sck, buf, sizeof(struct message));
+		size=recv(sck, buf, sizeof(struct message), 0);
 		msg=*(struct message*)buf;
 		if(size==0){
 			printf("Server turned off\n");
 			sighandler(0);
 		}
 		else if(msg.type==PING){
-			if(type==NET) write(sck, (void*)&msg, sizeof(struct message));
+			send(sck, (void*)&msg, sizeof(struct message), 0);
 		}
 		else if(msg.type==MSG){
 			msg.type=ANSWER;
@@ -108,7 +117,7 @@ int main(int argc, char* argv[]){
 				msg.answer = msg.num1/msg.num2;
 			}
 			printf("Dzialanie %d: %d\n", msg.cntr, msg.answer);
-			write(sck, (void*)&msg, sizeof(struct message));
+			send(sck, (void*)&msg, sizeof(struct message), 0);
 		}
 		else if(msg.type==DENIAL){
 			sighandler(1);

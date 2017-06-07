@@ -109,6 +109,7 @@ void handlemsg(struct message msg, struct sockaddr client, int sck){
 	if(msg.type==HANDSHAKE){
 		int taken=0;
 		int placed=0;
+		printf("Odebrano powitanie\n");
 		for(int i=0; i<MAXCLIENTS; i++){
 			if(strcmp(msg.name, clnames[i])==0){ 
 				taken=1;
@@ -183,11 +184,14 @@ void* ping(void* arg){
 			pinged[i]=1;
 			if(connection[i]==NET) sendto(netsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
 			else sendto(localsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
-			sleep(1);
+			sleep(5);
 			if(pinged[i]){
 				printf("Klient %s nie odpowiada, usuwam\n", clnames[i]);
 				strcpy(clnames[i], "");
 				connection[i]=-1;
+				msg.type=DENIAL;
+				if(connection[i]==NET) sendto(netsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
+			else sendto(localsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
 			}
 		}
 		i=(i+1)%MAXCLIENTS;

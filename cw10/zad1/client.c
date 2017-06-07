@@ -81,7 +81,7 @@ int main(int argc, char* argv[]){
 	msg.type=HANDSHAKE;
 	strcpy(msg.name, name);
 	sleep(1);
-	write(sck, (void*)&msg, sizeof(msg));
+	write(sck, (void*)&msg, sizeof(struct message));
 	printf("Wyslano powitanie\n");
 	signal(SIGINT, sighandler);
 	int size=0;
