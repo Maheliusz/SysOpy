@@ -99,9 +99,8 @@ void* handlecommands(void* arg){
 			msg.num1=atoi(num1);
 			msg.num2=atoi(num2);
 			msg.sign=symbol;
-			//TODO
-			if(connection[client]==NET)	sendto(monitor[NET].fd, (void*)&msg, sizeof(msg), 0, &clientaddr[i], sizeof(struct sockaddr));
-			else sendto(monitor[LOCAL].fd, (void*)&msg, sizeof(msg), 0, &clientaddr[i], sizeof(struct sockaddr));
+			if(connection[client]==NET)	sendto(monitor[NET].fd, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
+			else sendto(monitor[LOCAL].fd, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
 		}
 	}
 	return NULL;
@@ -157,15 +156,14 @@ void* watch(void* arg){
 	char buf[1024];
 	struct sockaddr client;
 	while(1){
-		//TODO
-		monitor[LOCAL].events=POLLIN|POLLOUT;
-		monitor[NET].events=POLLIN|POLLOUT;
+		monitor[LOCAL].events=POLLIN|POLLOUT|POLLRDHUP|POLLHUP;
+		monitor[NET].events=POLLIN|POLLOUT|POLLRDHUP|POLLHUP;
 		poll(monitor, 2, -1);
 		if(monitor[LOCAL].revents!=0){
 			recvfrom(monitor[LOCAL].fd, (void*)&buf, sizeof(struct message), 0, &client, NULL);
 			msg = *(struct message*)buf;
 			handlemsg(msg, client, monitor[LOCAL].fd);
-		} else if(monitor[LOCAL].revents!=0){
+		} else if(monitor[NET].revents!=0){
 			recvfrom(monitor[NET].fd, (void*)&buf, sizeof(struct message), 0, &client, NULL);
 			msg = *(struct message*)buf;
 			handlemsg(msg, client, monitor[NET].fd);
@@ -187,6 +185,7 @@ void* ping(void* arg){
 			else sendto(localsck, (void*)&msg, sizeof(struct message), 0, &clientaddr[i], sizeof(struct sockaddr));
 			sleep(1);
 			if(pinged[i]){
+				printf("Klient %s nie odpowiada, usuwam\n", clnames[i]);
 				strcpy(clnames[i], "");
 				connection[i]=-1;
 			}
