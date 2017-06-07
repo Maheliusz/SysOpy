@@ -50,9 +50,7 @@ int main(int argc, char* argv[]){
 	else port=-1;
 	struct message msg;
 	struct sockaddr_in naddr;
-	struct sockaddr_in nserv;
 	struct sockaddr_un laddr;
-	struct sockaddr_un lserv;
 	if(type==NET){
 		if((sck=socket(AF_INET, SOCK_DGRAM, 0))<0){
 			perror("Creating socket");
@@ -62,12 +60,8 @@ int main(int argc, char* argv[]){
 		naddr.sin_family=AF_INET;
 		naddr.sin_port=htons(port);
 		inet_pton(AF_INET, host, &(naddr.sin_addr));
-		if((bind(sck, (struct sockaddr*)&naddr, sizeof(struct sockaddr_un)))!=0){
+		/*if((bind(sck, (struct sockaddr*)&naddr, sizeof(struct sockaddr_un)))!=0){
 			perror("Bind");
-			return 1;
-		}
-		/*if((connect(sck, (struct sockaddr*)&naddr, sizeof(struct sockaddr_in)))!=0){
-			perror("Connection");
 			return 1;
 		}*/
 	}
@@ -84,10 +78,6 @@ int main(int argc, char* argv[]){
 			perror("Bind");
 			return 1;
 		}
-		/*if((connect(sck, (struct sockaddr*)&laddr, sizeof(struct sockaddr_un)))!=0){
-			perror("Connection");
-			return 1;
-		}*/
 	}
 	msg.type=HANDSHAKE;
 	strcpy(msg.name, name);
@@ -104,7 +94,7 @@ int main(int argc, char* argv[]){
 			sighandler(0);
 		}
 		else if(msg.type==PING){
-			sendto(sck, (void*)&msg, sizeof(struct message));
+			if(type==NET) write(sck, (void*)&msg, sizeof(struct message));
 		}
 		else if(msg.type==MSG){
 			msg.type=ANSWER;

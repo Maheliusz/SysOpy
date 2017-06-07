@@ -19,8 +19,8 @@
 #include<pthread.h>
 #include"header.h"
 
-const int LOCAL = MAXCLIENTS-2;
-const int NET = MAXCLIENTS-1;
+const int LOCAL = MAXCLIENTS+2;
+const int NET = MAXCLIENTS+1;
 
 int port;
 int local;
@@ -92,7 +92,7 @@ void* handlecommands(void* arg){
 		symbol=buf[i++];
 		for(j=i; j<strlen(buf)&&buf[j]>='0'&&buf[j]<='9'; j++)num2[j-i-1]=buf[j];
 		num2[j-i-1]='\0';
-		if((symbol=='+'||symbol=='-'||symbol=='*'||symbol=='/')!=1) continue;
+		if(!(symbol=='+'||symbol=='-'||symbol=='*'||symbol=='/')) continue;
 		client=getrandomclient();
 		if(client==-1) printf("No clients connected\n");
 		else{
@@ -117,8 +117,8 @@ void* watch(void* arg){
 	struct message msg;
 	char buf[1024];
 	while(1){
-		for(int i=0; i<MAXCLIENTS; i++){
-			monitor[i].events=POLLIN;
+		for(int i=0; i<MAXCLIENTS+2; i++){
+			monitor[i].events=POLLIN | POLLOUT | POLLRDHUP | POLLHUP;
 		}
 		res=poll(monitor, MAXCLIENTS+2, -1);
 		if(res==0) continue;
@@ -128,7 +128,9 @@ void* watch(void* arg){
 					int placed=0;
 					int taken=0;
 					int handle = accept(monitor[i].fd, NULL, NULL);
-					read(monitor[i].fd, buf, sizeof(struct message));
+					//read(monitor[i].fd, buf, sizeof(struct message));
+					read(handle, buf, sizeof(struct message));
+					printf("Odebrano powitanie\n");
 					msg=*(struct message*)buf;
 					for(int j=0; j<MAXCLIENTS; j++){
 						if(strcmp(clnames[j], msg.name)==0) taken=1;
@@ -158,8 +160,8 @@ void* watch(void* arg){
 					strcpy(clnames[i], "");
 					pinged[i]=0;
 				}
-				else if((monitor[i].revents & POLLIN) != 0){
-					read(monitor[i].fd, buf, sizeof(struct message));
+				else if((monitor[i].revents & POLLIN) == POLLIN){
+					if(recv(monitor[i].fd, buf, sizeof(struct message), MSG_DONTWAIT)<=0) continue;
 					msg=*(struct message*)buf;
 					if(msg.type==PING) pinged[i]=0;
 					else if(msg.type==ANSWER){
@@ -171,6 +173,29 @@ void* watch(void* arg){
 						monitor[i].fd=-1;
 						strcpy(clnames[i], "");
 						pinged[i]=0;
+					}
+					else if(msg.type==HANDSHAKE){
+						int placed=0;
+						int taken=0;
+						int handle = accept(monitor[i].fd, NULL, NULL);
+						for(int j=0; j<MAXCLIENTS; j++){
+							if(strcmp(clnames[j], msg.name)==0) taken=1;
+						}
+						for(int j=0; j<MAXCLIENTS; j++){
+							if(taken) break;
+							if(monitor[j].fd==-1){
+								placed=1;
+								monitor[j].fd=handle;
+								strcpy(clnames[j], msg.name);
+								break;
+							}
+						}
+						if(placed==0){
+						msg.type=DENIAL;
+							write(monitor[i].fd, (void*)&msg, sizeof(struct message));
+							shutdown(handle, SHUT_RDWR);
+							close(handle);
+						}
 					}
 				}
 			}
@@ -201,6 +226,7 @@ void* ping(void* arg){
 	}
 	return NULL;
 }
+
 
 int main(int argc, char* argv[]){
 	if(argc<3) return 1;

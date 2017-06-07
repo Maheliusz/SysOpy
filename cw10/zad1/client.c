@@ -72,7 +72,6 @@ int main(int argc, char* argv[]){
 		}
 		//struct sockaddr_un addr;
 		laddr.sun_family=AF_UNIX;
-		printf("%s\n", host);
 		strcpy(laddr.sun_path, host);
 		if((connect(sck, (struct sockaddr*)&laddr, sizeof(struct sockaddr_un)))!=0){
 			perror("Connection");
@@ -81,7 +80,9 @@ int main(int argc, char* argv[]){
 	}
 	msg.type=HANDSHAKE;
 	strcpy(msg.name, name);
+	sleep(1);
 	write(sck, (void*)&msg, sizeof(msg));
+	printf("Wyslano powitanie\n");
 	signal(SIGINT, sighandler);
 	int size=0;
 	char buf[1024];
